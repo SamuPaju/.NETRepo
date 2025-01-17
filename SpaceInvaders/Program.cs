@@ -1,4 +1,6 @@
-﻿namespace SpaceInvaders
+﻿
+
+namespace SpaceInvaders
 {
     internal class Program
     {
