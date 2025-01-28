@@ -1,4 +1,5 @@
 ﻿using Raylib_cs;
+using System;
 using System.Numerics;
 
 namespace Avaruuspeli;
@@ -13,12 +14,15 @@ public class MainProgram
     public void Start()
     {
         Raylib.InitWindow(screenWidth, screenHeight, "Avruuspeli");
+
+        AddEnemys();
+
         while (Raylib.WindowShouldClose() == false)
         {
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Color.Black);
 
-            AddEnemys();
+            
             Update();
 
             Raylib.EndDrawing();
@@ -58,26 +62,26 @@ public class MainProgram
     /// </summary>
     public void HandleBullets()
     {
-
         foreach (Bullet bullet in playerBullets)
         {
             bullet.Handler();
+
+            foreach (Enemy enemy in enemies)
+            {
+                if (Raylib.CheckCollisionRecs(bullet.spriterenderer.box, enemy.spriteRenderer.box))
+                {
+                    playerBullets.Remove(bullet);
+                    enemies.Remove(enemy);
+                    return;
+                }
+            }
+
             if (bullet.transfrom.position.X <= -10)
             {
                 playerBullets.Remove(bullet);
+                return;
             }
-        }
-        /*
-        for (int i = 0; i < playerBullets.Count; i++)
-        {
-            playerBullets[i].Handler();
-
-            if (playerBullets[i].transfrom.position.X <= -10)
-            {
-                playerBullets.Remove(playerBullets[i]);
-            }
-        }
-        */
+        }        
     }
 
     /// <summary>
