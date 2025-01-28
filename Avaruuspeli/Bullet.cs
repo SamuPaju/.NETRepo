@@ -16,6 +16,9 @@ public class Bullet
 		spriterenderer = new SpriteRenderer(transfrom, collision, color);
 	}
 
+	/// <summary>
+	/// Handles bullet's movement and drawing
+	/// </summary>
 	public void Handler()
 	{
 		transfrom.position.Y -= transfrom.speed * Raylib.GetFrameTime();
