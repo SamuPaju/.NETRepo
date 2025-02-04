@@ -7,22 +7,22 @@ public class MainProgram
 {
     int screenWidth = 800;
     int screenHeight = 600;
-    Player player = new Player(new Vector2(400, 500), 50, 100, Color.White);
+    Player player = new Player(new Vector2(400, 500), 25, 100, Color.White);
     List<Bullet> playerBullets = new List<Bullet>();
     List<Enemy> enemies = new List<Enemy>();
-    
+    double shotTime = -1;
+
     public void Start()
     {
         Raylib.InitWindow(screenWidth, screenHeight, "Avruuspeli");
 
-        AddEnemys();
+        AddEnemies();
 
         while (Raylib.WindowShouldClose() == false)
         {
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Color.Black);
 
-            
             Update();
 
             Raylib.EndDrawing();
@@ -35,7 +35,6 @@ public class MainProgram
         Movement(player.transform);
         KeepInsideScreen(player.transform, player.collision, screenWidth, screenHeight);
         Draw();
-
 
         if (Raylib.IsKeyPressed(KeyboardKey.Space))
         {
@@ -52,9 +51,13 @@ public class MainProgram
     /// <param name="collision"></param>
     public void Shoot(Transform transform, Collision collision)
     {
-        Vector2 playerPos = transform.position;
-        playerPos.X += collision.size / 4;
-        playerBullets.Add(new Bullet(playerPos, 20, 200, Color.Yellow));
+        if (Raylib.GetTime() > shotTime + 2)
+        {
+            Vector2 playerPos = transform.position;
+            playerPos.X += collision.size / 2;
+            playerBullets.Add(new Bullet(playerPos, 10, 200, Color.Yellow));
+            shotTime = Raylib.GetTime();
+        }
     }
 
     /// <summary>
@@ -87,9 +90,7 @@ public class MainProgram
     /// <summary>
     /// Adds enemies in the start
     /// </summary>
-    /// <param name="sw"></param>
-    /// <param name="sh"></param>
-    public void AddEnemys()
+    public void AddEnemies()
     {
         int spawnX = 0;
         int spawnY = 0;
@@ -97,7 +98,7 @@ public class MainProgram
         int rows = 2;
         int columns = 4;
 
-        int enemySize = 40;
+        int enemySize = 25;
         int spaceBetween = 20;
 
         for (int row = 0; row < rows; row++)
