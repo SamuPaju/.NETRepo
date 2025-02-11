@@ -10,6 +10,7 @@ public class MainProgram
     Player player = new Player(new Vector2(400, 500), 25, 100, Color.White);
     List<Bullet> playerBullets = new List<Bullet>();
     List<Enemy> enemies = new List<Enemy>();
+    EnemyFormation enemyFormation = new EnemyFormation(new Vector2(0, 0), 0, 0);
     double shotTime = -1;
 
     public void Start()
@@ -95,8 +96,8 @@ public class MainProgram
         int spawnX = 0;
         int spawnY = 0;
 
-        int rows = 2;
-        int columns = 4;
+        int rows = 6;
+        int columns = 11;
 
         int enemySize = 25;
         int spaceBetween = 20;
@@ -114,6 +115,36 @@ public class MainProgram
         }
     }
 
+    public void ResizeEF(EnemyFormation ef, List<Enemy> enemies)
+    {
+        float left = enemies[0].transform.position.X;
+        float right = enemies[0].transform.position.Y + enemies[0].collision.size;
+        //float bottom = enemies[0].collision.size + enemies[0].transform.position.X;
+        float top = enemies[0].transform.position.Y;
+
+        foreach (Enemy enemy in enemies)
+        {
+            if (enemy.transform.position.X < left)
+            {
+                left = enemy.transform.position.X;
+            }
+            if (enemy.transform.position.Y + enemy.collision.size > right)
+            {
+                right = enemy.transform.position.Y;
+            }
+            if (enemy.transform.position.X < top)
+            {
+                top = enemy.collision.size;
+            }
+            /*if (enemy.collision.size + enemy.transform.position.Y > bottom)
+            {
+                bottom = enemy.collision.size;
+            }*/
+        }
+
+        ef.transform.position = new Vector2(left, top);
+        ef.collision.size = (int)(right - left);
+    }
     public void EnemyHandle()
     {
         // Coming later
