@@ -18,7 +18,7 @@ public class SpriteRenderer
 
 	public void Draw()
 	{
-		box = new Rectangle((int)transform.position.X, (int)transform.position.Y, collision.size, collision.size);
+		box = new Rectangle((int)transform.position.X, (int)transform.position.Y, collision.size.X, collision.size.Y);
         Raylib.DrawRectangleRec(box, color);
 	}
 }

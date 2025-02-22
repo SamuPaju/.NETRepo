@@ -5,7 +5,7 @@ using System.Numerics;
 namespace Avaruuspeli;
 public class MainProgramT
 {
-    int screenWidth = 800;
+    /*int screenWidth = 800;
     int screenHeight = 600;
     Player player = new Player(new Vector2(400, 500), 25, 100, Color.White);
     List<Bullet> playerBullets = new List<Bullet>();
@@ -119,12 +119,12 @@ public class MainProgramT
     {
         float left = enemies[0].transform.position.X;
         float right = enemies[0].transform.position.Y + enemies[0].collision.size;
-        //float bottom = enemies[0].collision.size + enemies[0].transform.position.X;
+        float bottom = enemies[0].collision.size + enemies[0].transform.position.X;
         float top = enemies[0].transform.position.Y;
 
         foreach (Enemy enemy in enemies)
         {
-            /* Etsi alin ja eniten oikealla oleva = saat oikean alakulman sijainnin */
+            // Etsi alin ja eniten oikealla oleva = saat oikean alakulman sijainnin
 
             if (enemy.transform.position.X < left)
             {
@@ -138,10 +138,10 @@ public class MainProgramT
             {
                 top = enemy.collision.size;
             }
-            /*if (enemy.collision.size + enemy.transform.position.Y > bottom)
+            if (enemy.collision.size + enemy.transform.position.Y > bottom)
             {
                 bottom = enemy.collision.size;
-            }*/
+            }
         }
 
         ef.transform.position = new Vector2(left, top);
@@ -189,11 +189,11 @@ public class MainProgramT
     {
         float x = transfrom.position.X;
         transfrom.position.X = Math.Clamp(x, 0, width - collision.size / 2);
-        /*
-        float y = transfrom.position.Y;
-        transfrom.position.Y = Math.Clamp(y, 0, height - collision.size / 2);
-        */
-    }
+        
+        //float y = transfrom.position.Y;
+        //transfrom.position.Y = Math.Clamp(y, 0, height - collision.size / 2);
+        
+    }*/
 }
 
     

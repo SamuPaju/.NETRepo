@@ -9,7 +9,7 @@ public class Bullet
 	public Collision collision;
 	public SpriteRenderer spriterenderer;
 
-	public Bullet(Vector2 startPosition, int size, float speed, Color color)
+	public Bullet(Vector2 startPosition, Vector2 size, float speed, Color color)
 	{
 		transfrom = new Transform(startPosition, speed);
 		collision = new Collision(transfrom, size);

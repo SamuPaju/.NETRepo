@@ -9,7 +9,7 @@ namespace Avaruuspeli
         public Collision collision;
         public SpriteRenderer spriteRenderer;
 
-        public Player(Vector2 position, int size, float speed, Color color)
+        public Player(Vector2 position, Vector2 size, float speed, Color color)
         {
             transform = new Transform(position, speed);
             collision = new Collision(transform, size);

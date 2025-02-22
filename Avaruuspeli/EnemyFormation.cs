@@ -7,7 +7,7 @@ namespace Avaruuspeli
         public Transform transform;
         public Collision collision;
 
-        public EnemyFormation(Vector2 position, int size, float speed)
+        public EnemyFormation(Vector2 position, Vector2 size, float speed)
         {
             transform = new Transform(position, speed);
             collision = new Collision(transform, size);

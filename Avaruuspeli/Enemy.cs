@@ -10,7 +10,7 @@ public class Enemy
     public Collision collision;
     public SpriteRenderer spriteRenderer;
 
-    public Enemy(Vector2 position, int size, float speed, Color color)
+    public Enemy(Vector2 position, Vector2 size, float speed, Color color)
 	{
         transform = new Transform(position, speed);
         collision = new Collision(transform, size);
