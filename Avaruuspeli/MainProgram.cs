@@ -19,6 +19,10 @@ class MainProgram
     Player player;
     double shotTime = -1;
     List<Bullet> playerBullets = new List<Bullet>();
+    int score;
+    int multiplier = 1;
+    int kills;
+    double timer;
 
     // Enemy
     List<Enemy> enemies = new List<Enemy>();
@@ -38,6 +42,8 @@ class MainProgram
         screenHeight = Raylib.GetScreenHeight();
 
         player = new Player(new Vector2(screenWidth / 2, 500), new Vector2(25, 25), 100, Color.White);
+        score = 0;
+        kills = 0;
 
         AddEnemies(5, 10);
         enemyFormation = new EnemyFormation(new Vector2(0, 0), new Vector2(0, 0), enemySpeed);
@@ -52,7 +58,7 @@ class MainProgram
                     Draw();
                     break;
                 case GameState.ScoreScreen:
-                    // Do score screen
+                    ScoreScreen();
                     break;
             }
         }
@@ -68,6 +74,13 @@ class MainProgram
             Shoot(player.transform, player.collision);
         }
         EnemyHandler(enemies, enemyFormation, screenWidth);
+
+        if (Raylib.IsKeyPressed(KeyboardKey.P))
+        {
+            timer = Raylib.GetTime();
+            state = GameState.ScoreScreen;
+        }
+        
     }
 
     private void Draw()
@@ -169,6 +182,8 @@ class MainProgram
                     {
                         bulletList.Remove(bullet);
                         enemyList.Remove(enemy);
+                        IncreaseScore(100, multiplier);
+                        kills++;
                         ResizeEF(enemyFormation, enemyList);
                         return;
                     }
@@ -290,18 +305,65 @@ class MainProgram
     }
 
     /// <summary>
-    /// Restart the game
+    /// Restarts the game
     /// </summary>
-    public void Restart()
+    public void RestartGame()
     {
         playerBullets = new List<Bullet>();
         enemies = new List<Enemy>();
         state = GameState.Play;
 
         player = new Player(new Vector2(screenWidth / 2, 500), new Vector2(25, 25), 100, Color.White);
+        score = 0;
+        multiplier = 1;
+        kills = 0;
 
         AddEnemies(5, 10);
         enemyFormation = new EnemyFormation(new Vector2(0, 0), new Vector2(0, 0), enemySpeed);
         ResizeEF(enemyFormation, enemies);
+    }
+
+    /// <summary>
+    /// Increases score
+    /// </summary>
+    /// <param name="amount"></param>
+    /// <param name="multiplier"></param>
+    public void IncreaseScore(int amount, int multiplier)
+    {
+        if (multiplier == 0) { multiplier = 1; }
+        score += amount * multiplier;
+    }
+
+    /// <summary>
+    /// Show player stats from the last run
+    /// </summary>
+    public void ScoreScreen()
+    {
+        Raylib.BeginDrawing();
+        Raylib.ClearBackground(Color.Black);
+
+        Vector2 gameoverTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Game Over", 70, 3);
+        Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Game Over", 
+            new Vector2(screenWidth / 2 - gameoverTextSize.X / 2, screenHeight / 6), 70, 3, Color.Red);
+
+        Vector2 scoreTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Score: {score}", 50, 3);
+        Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Score: {score}", 
+            new Vector2(screenWidth / 2 - scoreTextSize.X / 2, screenHeight / 2 - 100), 50, 3, Color.White);
+        
+        Vector2 killsTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Kills: {kills}", 50, 3);
+        Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Kills: {kills}", 
+            new Vector2(screenWidth / 2 - killsTextSize.X / 2, screenHeight / 2 - 50), 50, 3, Color.White);
+       
+        Vector2 timerTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Time: {Math.Round(timer, 2)}", 50, 3);
+        Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Time: {Math.Round(timer, 2)}", 
+            new Vector2(screenWidth / 2 - timerTextSize.X / 2, screenHeight / 2), 50, 3, Color.White);
+
+        Vector2 guideTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Press any key to continue", 50, 3);
+        Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Press any key to continue",
+            new Vector2(screenWidth / 2 - guideTextSize.X / 2, screenHeight / 2 + 100), 50, 3, Color.White);
+
+        if (Raylib.GetKeyPressed() != 0) { RestartGame(); }
+
+        Raylib.EndDrawing();
     }
 }
