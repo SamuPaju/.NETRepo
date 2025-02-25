@@ -301,7 +301,7 @@ class MainProgram
         }
         // Sets the new position and size
         ef.transform.position = new Vector2(left, top);
-        ef.collision.size = new Vector2(right, bottom);
+        ef.collision.size = new Vector2(right - left, bottom);
     }
 
     /// <summary>
