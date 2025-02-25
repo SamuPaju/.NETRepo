@@ -22,8 +22,8 @@ class MainProgram
     int score;
     int multiplier = 1;
     int kills;
-    double gameTimer = 0;
     double roundTimer;
+    double timer = 0;
 
     // Enemy
     List<Enemy> enemies = new List<Enemy>();
@@ -81,6 +81,8 @@ class MainProgram
 
         if (Raylib.IsKeyPressed(KeyboardKey.P/*Escape*/) || player.health <= 0)
         {
+            roundTimer = Raylib.GetTime() - timer;
+            timer = Raylib.GetTime();
             state = GameState.ScoreScreen;
         }
 
@@ -351,9 +353,6 @@ class MainProgram
         
         if (!isNewLevel)
         {
-            roundTimer = 0;
-            roundTimer += Raylib.GetTime(); // - gameTimer;
-            //gameTimer = Raylib.GetTime();
             score = 0;
             multiplier = 1;
             kills = 0;
@@ -395,8 +394,8 @@ class MainProgram
         Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Kills: {kills}", 
             new Vector2(screenWidth / 2 - killsTextSize.X / 2, screenHeight / 2 - 50), 50, 3, Color.White);
        
-        Vector2 timerTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Time: {Math.Round(roundTimer, 2)}", 50, 3);
-        Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Time: {Math.Round(roundTimer, 2)}", 
+        Vector2 timerTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Time: {Math.Round(roundTimer)}", 50, 3);
+        Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Time: {Math.Round(roundTimer)}", 
             new Vector2(screenWidth / 2 - timerTextSize.X / 2, screenHeight / 2), 50, 3, Color.White);
 
         Vector2 guideTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Press any key to continue", 50, 3);
