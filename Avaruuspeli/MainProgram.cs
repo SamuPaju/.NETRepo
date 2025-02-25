@@ -22,11 +22,14 @@ class MainProgram
     int score;
     int multiplier = 1;
     int kills;
-    double timer;
+    double gameTimer = 0;
+    double roundTimer;
 
     // Enemy
     List<Enemy> enemies = new List<Enemy>();
-    float enemySpeed = 10;
+    double enemyShotTime = -1;
+    List<Bullet> enemyBullets = new List<Bullet>();
+    float enemySpeed = 20;
     EnemyFormation enemyFormation;
 
     // Other variables
@@ -41,7 +44,7 @@ class MainProgram
         screenWidth = Raylib.GetScreenWidth();
         screenHeight = Raylib.GetScreenHeight();
 
-        player = new Player(new Vector2(screenWidth / 2, 500), new Vector2(25, 25), 100, Color.White);
+        player = new Player(new Vector2(screenWidth / 2, screenHeight * 0.85f), new Vector2(25, 25), 100, Color.White);
         score = 0;
         kills = 0;
 
@@ -74,13 +77,17 @@ class MainProgram
             Shoot(player.transform, player.collision);
         }
         EnemyHandler(enemies, enemyFormation, screenWidth);
+        EnemyShoot(enemies, enemyFormation);
 
-        if (Raylib.IsKeyPressed(KeyboardKey.P))
+        if (Raylib.IsKeyPressed(KeyboardKey.P/*Escape*/) || player.health <= 0)
         {
-            timer = Raylib.GetTime();
             state = GameState.ScoreScreen;
         }
-        
+
+        if (Raylib.IsKeyPressed(KeyboardKey.M) || enemies.Count <= 0)
+        {
+            RestartGame(true);
+        }
     }
 
     private void Draw()
@@ -89,22 +96,26 @@ class MainProgram
         Raylib.ClearBackground(Color.Black);
 
         player.spriteRenderer.Draw();
-        HandleBullets(playerBullets, enemies, screenHeight, true);
 
-        Raylib.DrawRectangle((int)enemyFormation.transform.position.X, (int)enemyFormation.transform.position.Y,
-            (int)enemyFormation.collision.size.X, (int)enemyFormation.collision.size.Y, Color.Green);
+        // A rectangle to show where the EnemyFormations edges are
+        //Raylib.DrawRectangle((int)enemyFormation.transform.position.X, (int)enemyFormation.transform.position.Y, 
+        //    (int)enemyFormation.collision.size.X, (int)enemyFormation.collision.size.Y, Color.Green);
+
 
         foreach (Enemy enemy in enemies)
         {
             enemy.spriteRenderer.Draw();
         }
 
+        HandleBullets(playerBullets, enemies, screenHeight, true);
+        HandleBullets(enemyBullets, enemies, screenHeight, false);
+
         Raylib.EndDrawing();
     }
 
 
     /// <summary>
-    /// Makes the movement for isPlayerShooting
+    /// Makes the movement for player
     /// </summary>
     /// <param name="transform"></param>
     public void Movement(Transform transform)
@@ -120,7 +131,7 @@ class MainProgram
     }
 
     /// <summary>
-    /// Keeps isPlayerShooting in the game area
+    /// Keeps player in the game area
     /// </summary>
     /// <param name="transfrom"></param>
     /// <param name="collision"></param>
@@ -152,6 +163,23 @@ class MainProgram
             shotTime = Raylib.GetTime();
         }
     }
+    
+    /// <summary>
+    /// Makes enemies shoot
+    /// </summary>
+    /// <param name="enemyList"></param>
+    /// <param name="EF">EnemyFormation</param>
+    public void EnemyShoot(List<Enemy> enemyList, EnemyFormation EF)
+    {
+        if (Raylib.GetTime() > enemyShotTime + 2)
+        {
+            int randomEnemy = new Random().Next(0, enemyList.Count());
+            Vector2 bulletPos = new Vector2(enemyList[randomEnemy].transform.position.X, EF.transform.position.Y + EF.collision.size.Y);
+            bulletPos.X += enemyList[randomEnemy].collision.size.X / 2;
+            enemyBullets.Add(new Bullet(bulletPos, new Vector2(10, 10), -200, Color.Yellow));
+            enemyShotTime = Raylib.GetTime();
+        }
+    }
 
     /// <summary>
     /// Takes care of bullet in a given list
@@ -169,7 +197,7 @@ class MainProgram
             // Removes bullets that go out of window
             if (bullet.transfrom.position.Y <= -10 || bullet.transfrom.position.Y >= screenHeight + 10)
             {
-                playerBullets.Remove(bullet);
+                bulletList.Remove(bullet);
                 return;
             }
 
@@ -194,7 +222,7 @@ class MainProgram
                 if (Raylib.CheckCollisionRecs(bullet.spriterenderer.box, player.spriteRenderer.box))
                 {
                     bulletList.Remove(bullet);
-                    // ---Decrease player health---
+                    player.health--;
                     return;
                 }
             }
@@ -208,18 +236,18 @@ class MainProgram
     /// <param name="enemyColumns"></param>
     public void AddEnemies(int enemyRows, int enemyColumns)
     {
-        int spawnX = 0;
+        int spawnX = 1;
         int spawnY = 0;
 
         int rows = enemyRows;
         int columns = enemyColumns;
 
         int enemySize = 25;
-        int spaceBetween = 25;
+        int spaceBetween = 30;
 
         for (int row = 0; row < rows; row++)
         {
-            spawnX = 0;
+            spawnX = 1;
             for (int column = 0; column < columns; column++)
             {
                 Vector2 spawnPos = new Vector2(spawnX, spawnY);
@@ -229,7 +257,6 @@ class MainProgram
             spawnY += enemySize + spaceBetween;
         }
     }
-
 
     /// <summary>
     /// Handles enemies and the EnemyFormation
@@ -253,7 +280,9 @@ class MainProgram
             {
                 enemy.transform.position.X -= 1;
                 enemy.transform.speed *= -1;
+                enemy.transform.position.Y += 25;
             }
+            ResizeEF(EF, enemyList);
         }
         if (EF.transform.position.X <= 0)
         {
@@ -263,7 +292,9 @@ class MainProgram
             {
                 enemy.transform.position.X += 1;
                 enemy.transform.speed *= -1;
+                enemy.transform.position.Y += 25;
             }
+            ResizeEF(EF, enemyList);
         }
     }
 
@@ -274,6 +305,8 @@ class MainProgram
     /// <param name="enemies"></param>
     public void ResizeEF(EnemyFormation ef, List<Enemy> enemies)
     {
+        if (enemies.Count <= 0) { return; }
+
         float left = enemies[0].transform.position.X;
         float right = enemies[0].transform.position.X;
         float top = enemies[0].transform.position.Y;
@@ -301,22 +334,30 @@ class MainProgram
         }
         // Sets the new position and size
         ef.transform.position = new Vector2(left, top);
-        ef.collision.size = new Vector2(right - left, bottom);
+        ef.collision.size = new Vector2(right - left, bottom - top);
     }
 
     /// <summary>
     /// Restarts the game
     /// </summary>
-    public void RestartGame()
+    public void RestartGame(bool isNewLevel)
     {
         playerBullets = new List<Bullet>();
+        enemyBullets = new List<Bullet>();
         enemies = new List<Enemy>();
         state = GameState.Play;
 
-        player = new Player(new Vector2(screenWidth / 2, 500), new Vector2(25, 25), 100, Color.White);
-        score = 0;
-        multiplier = 1;
-        kills = 0;
+        player = new Player(new Vector2(screenWidth / 2, screenHeight * 0.85f), new Vector2(25, 25), 100, Color.White);
+        
+        if (!isNewLevel)
+        {
+            roundTimer = 0;
+            roundTimer += Raylib.GetTime(); // - gameTimer;
+            //gameTimer = Raylib.GetTime();
+            score = 0;
+            multiplier = 1;
+            kills = 0;
+        }
 
         AddEnemies(5, 10);
         enemyFormation = new EnemyFormation(new Vector2(0, 0), new Vector2(0, 0), enemySpeed);
@@ -354,15 +395,15 @@ class MainProgram
         Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Kills: {kills}", 
             new Vector2(screenWidth / 2 - killsTextSize.X / 2, screenHeight / 2 - 50), 50, 3, Color.White);
        
-        Vector2 timerTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Time: {Math.Round(timer, 2)}", 50, 3);
-        Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Time: {Math.Round(timer, 2)}", 
+        Vector2 timerTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Time: {Math.Round(roundTimer, 2)}", 50, 3);
+        Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Time: {Math.Round(roundTimer, 2)}", 
             new Vector2(screenWidth / 2 - timerTextSize.X / 2, screenHeight / 2), 50, 3, Color.White);
 
         Vector2 guideTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Press any key to continue", 50, 3);
         Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Press any key to continue",
             new Vector2(screenWidth / 2 - guideTextSize.X / 2, screenHeight / 2 + 100), 50, 3, Color.White);
 
-        if (Raylib.GetKeyPressed() != 0) { RestartGame(); }
+        if (Raylib.GetKeyPressed() != 0) { RestartGame(false); }
 
         Raylib.EndDrawing();
     }
