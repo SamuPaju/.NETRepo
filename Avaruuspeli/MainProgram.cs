@@ -29,7 +29,7 @@ class MainProgram
     List<Enemy> enemies = new List<Enemy>();
     double enemyShotTime = -1;
     List<Bullet> enemyBullets = new List<Bullet>();
-    float enemySpeed = 20;
+    float enemySpeed = 25;
     EnemyFormation enemyFormation;
 
     // Other variables
@@ -79,13 +79,17 @@ class MainProgram
         EnemyHandler(enemies, enemyFormation, screenWidth);
         EnemyShoot(enemies, enemyFormation);
 
-        if (Raylib.IsKeyPressed(KeyboardKey.P/*Escape*/) || player.health <= 0)
+        // Game over
+        Rectangle enemyFormationRec = new Rectangle((int)enemyFormation.transform.position.X, (int)enemyFormation.transform.position.Y,
+            (int)enemyFormation.collision.size.X, (int)enemyFormation.collision.size.Y);
+        if (Raylib.CheckCollisionRecs(enemyFormationRec, player.spriteRenderer.box) || Raylib.IsKeyPressed(KeyboardKey.Escape) || player.health <= 0)
         {
             roundTimer = Raylib.GetTime() - timer;
             timer = Raylib.GetTime();
             state = GameState.ScoreScreen;
         }
 
+        // New round
         if (Raylib.IsKeyPressed(KeyboardKey.M) || enemies.Count <= 0)
         {
             RestartGame(true);
@@ -148,7 +152,6 @@ class MainProgram
         transfrom.position.Y = Math.Clamp(y, 0, height - collision.size);
         */
     }
-
 
     /// <summary>
     /// Shoots a bullet from given objects location
@@ -268,6 +271,8 @@ class MainProgram
     /// <param name="screenWidth"></param>
     public void EnemyHandler(List<Enemy> enemyList, EnemyFormation EF, int screenWidth)
     {
+        int downMovement = 50;
+
         EF.transform.position.X += EF.transform.speed * Raylib.GetFrameTime();
         foreach (Enemy enemy in enemyList)
         {
@@ -282,7 +287,7 @@ class MainProgram
             {
                 enemy.transform.position.X -= 1;
                 enemy.transform.speed *= -1;
-                enemy.transform.position.Y += 25;
+                enemy.transform.position.Y += downMovement;
             }
             ResizeEF(EF, enemyList);
         }
@@ -294,7 +299,7 @@ class MainProgram
             {
                 enemy.transform.position.X += 1;
                 enemy.transform.speed *= -1;
-                enemy.transform.position.Y += 25;
+                enemy.transform.position.Y += downMovement;
             }
             ResizeEF(EF, enemyList);
         }
