@@ -9,11 +9,11 @@ public class Bullet
 	public Collision collision;
 	public SpriteRenderer spriterenderer;
 
-	public Bullet(Vector2 startPosition, Vector2 size, float speed, Color color)
+	public Bullet(Vector2 startPosition, Vector2 size, float speed, Color color, Texture2D sprite)
 	{
 		transfrom = new Transform(startPosition, speed);
 		collision = new Collision(transfrom, size);
-		spriterenderer = new SpriteRenderer(transfrom, collision, color);
+		spriterenderer = new SpriteRenderer(transfrom, collision, color, sprite);
 	}
 
 	/// <summary>

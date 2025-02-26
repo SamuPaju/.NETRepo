@@ -32,6 +32,9 @@ class MainProgram
     float enemySpeed = 25;
     EnemyFormation enemyFormation;
 
+    // Sprites
+    Texture2D playerImage;
+
     // Other variables
     GameState state;
 
@@ -41,10 +44,13 @@ class MainProgram
 
         Raylib.InitWindow(800, 600, "Avaruuspeli");
 
+        // Image loading
+        playerImage = Raylib.LoadTexture("Data/Images/newshf.shp.000000.png");
+
         screenWidth = Raylib.GetScreenWidth();
         screenHeight = Raylib.GetScreenHeight();
 
-        player = new Player(new Vector2(screenWidth / 2, screenHeight * 0.85f), new Vector2(25, 25), 100, Color.White);
+        player = new Player(new Vector2(screenWidth / 2, screenHeight * 0.85f), new Vector2(25, 25), 100, Color.White, playerImage);
         score = 0;
         kills = 0;
 
@@ -162,7 +168,7 @@ class MainProgram
         {
             Vector2 objectPos = transform.position;
             objectPos.X += collision.size.X / 2;
-            playerBullets.Add(new Bullet(objectPos, new Vector2(10, 10), 200, Color.Yellow));
+            playerBullets.Add(new Bullet(objectPos, new Vector2(10, 10), 200, Color.Yellow, playerImage));
             shotTime = Raylib.GetTime();
         }
     }
@@ -179,7 +185,7 @@ class MainProgram
             int randomEnemy = new Random().Next(0, enemyList.Count());
             Vector2 bulletPos = new Vector2(enemyList[randomEnemy].transform.position.X, EF.transform.position.Y + EF.collision.size.Y);
             bulletPos.X += enemyList[randomEnemy].collision.size.X / 2;
-            enemyBullets.Add(new Bullet(bulletPos, new Vector2(10, 10), -200, Color.Yellow));
+            enemyBullets.Add(new Bullet(bulletPos, new Vector2(10, 10), -200, Color.Yellow, playerImage));
             enemyShotTime = Raylib.GetTime();
         }
     }
@@ -254,7 +260,7 @@ class MainProgram
             for (int column = 0; column < columns; column++)
             {
                 Vector2 spawnPos = new Vector2(spawnX, spawnY);
-                enemies.Add(new Enemy(spawnPos, new Vector2(enemySize, enemySize), enemySpeed, Color.Red));
+                enemies.Add(new Enemy(spawnPos, new Vector2(enemySize, enemySize), enemySpeed, Color.Red, playerImage));
                 spawnX += enemySize + spaceBetween;
             }
             spawnY += enemySize + spaceBetween;
@@ -352,7 +358,7 @@ class MainProgram
         enemies = new List<Enemy>();
         state = GameState.Play;
 
-        player = new Player(new Vector2(screenWidth / 2, screenHeight * 0.85f), new Vector2(25, 25), 100, Color.White);
+        player = new Player(new Vector2(screenWidth / 2, screenHeight * 0.85f), new Vector2(25, 25), 100, Color.White, playerImage);
         
         if (!isNewLevel)
         {

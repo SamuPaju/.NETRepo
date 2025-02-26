@@ -10,11 +10,11 @@ public class Enemy
     public Collision collision;
     public SpriteRenderer spriteRenderer;
 
-    public Enemy(Vector2 position, Vector2 size, float speed, Color color)
+    public Enemy(Vector2 position, Vector2 size, float speed, Color color, Texture2D sprite)
 	{
         transform = new Transform(position, speed);
         collision = new Collision(transform, size);
-        spriteRenderer = new SpriteRenderer(transform, collision, color);
+        spriteRenderer = new SpriteRenderer(transform, collision, color, sprite);
     }
 
     public void ChangeDirection()
