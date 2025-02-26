@@ -80,9 +80,7 @@ class MainProgram
         EnemyShoot(enemies, enemyFormation);
 
         // Game over
-        Rectangle enemyFormationRec = new Rectangle((int)enemyFormation.transform.position.X, (int)enemyFormation.transform.position.Y,
-            (int)enemyFormation.collision.size.X, (int)enemyFormation.collision.size.Y);
-        if (Raylib.CheckCollisionRecs(enemyFormationRec, player.spriteRenderer.box) || Raylib.IsKeyPressed(KeyboardKey.Escape) || player.health <= 0)
+        if (Raylib.CheckCollisionRecs(enemyFormation.enemyFormationRec, player.spriteRenderer.box) || Raylib.IsKeyPressed(KeyboardKey.Escape) || player.health <= 0)
         {
             roundTimer = Raylib.GetTime() - timer;
             timer = Raylib.GetTime();
