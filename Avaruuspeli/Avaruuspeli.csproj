@@ -11,4 +11,19 @@
     <PackageReference Include="Raylib-cs" Version="7.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Data\Images\newshf.shp.000000.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Images\tyrian.shp.000000.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Images\tyrian.shp.007D3C.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Remastered Tyrian Graphics\destruct_sprites.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
