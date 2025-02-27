@@ -103,8 +103,13 @@ class MainProgram
         Raylib.UnloadTexture(bulletImage);
         Raylib.UnloadTexture(enemyImage);
 
+        // Unload audio
+        Raylib.UnloadSound(shootSound);
+        Raylib.UnloadSound(explotionSound);
+        Raylib.UnloadMusicStream(backgroundMusic);
         Raylib.UnloadMusicStream(backgroundMusic);
         Raylib.CloseAudioDevice();
+
         Raylib.CloseWindow();
     }
 
