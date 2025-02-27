@@ -10,13 +10,18 @@ public class SpriteRenderer
 	public Color color;
 	public Rectangle box;
 	Texture2D sprite;
+	bool rotate;
+	Rectangle spriteSpot;
 
-	public SpriteRenderer(Transform transform, Collision collision, Color color, Texture2D sprite)
+
+    public SpriteRenderer(Transform transform, Collision collision, Color color, Texture2D sprite, bool rotate, Rectangle spriteSpot)
 	{
 		this.transform = transform;
 		this.collision = collision;
 		this.color = color;
 		this.sprite = sprite;
+		this.rotate = rotate;
+		this.spriteSpot = spriteSpot;
 	}
 
 	public void Draw()
@@ -35,7 +40,7 @@ public class SpriteRenderer
 		NPatchInfo nPatchInfo = new NPatchInfo()
 		{
 			// What part of the picture
-			Source = new Rectangle(26, 0, 24, 26),
+			Source = spriteSpot,
 
 			// How much scaling (propably???)
 			Left = 0,
@@ -43,6 +48,11 @@ public class SpriteRenderer
 			Right = 0,
 			Bottom = 0
 		};
-		Raylib.DrawTextureNPatch(sprite, nPatchInfo, box, new Vector2(box.Width, box.Height), 180, Color.White);
+
+		if (rotate)
+		{
+			Raylib.DrawTextureNPatch(sprite, nPatchInfo, box, new Vector2(box.Width, box.Height), 180, Color.White);
+		}
+		else { Raylib.DrawTextureNPatch(sprite, nPatchInfo, box, new Vector2(0, 0), 0, Color.White); }            
 	}
 }
