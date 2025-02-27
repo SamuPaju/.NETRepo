@@ -49,10 +49,12 @@ public class SpriteRenderer
 			Bottom = 0
 		};
 
+		// If rotate is true we will turn the image and set the origin to the down right corner
 		if (rotate)
 		{
 			Raylib.DrawTextureNPatch(sprite, nPatchInfo, box, new Vector2(box.Width, box.Height), 180, Color.White);
 		}
+		// Else we will draw the image normally
 		else { Raylib.DrawTextureNPatch(sprite, nPatchInfo, box, new Vector2(0, 0), 0, Color.White); }            
 	}
 }

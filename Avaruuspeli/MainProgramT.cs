@@ -3,6 +3,10 @@ using System;
 using System.Numerics;
 
 namespace Avaruuspeli;
+
+/// <summary>
+/// Original version that got too messy
+/// </summary>
 public class MainProgramT
 {
     /*int screenWidth = 800;

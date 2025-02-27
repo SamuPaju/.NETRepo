@@ -39,19 +39,37 @@ class MainProgram
     Texture2D bulletImage;
     Texture2D enemyImage;
 
+    // Audio
+    Sound shootSound;
+    Sound explotionSound;
+    Music backgroundMusic;
+
     // Other variables
     GameState state;
 
+    /// <summary>
+    /// Sets everything ready to start the game
+    /// </summary>
     public void Start()
     {
         state = GameState.Play;
 
         Raylib.InitWindow(800, 600, "Avaruuspeli");
+        Raylib.InitAudioDevice();
 
         // Image loading
         playerImage = Raylib.LoadTexture("Data/Images/newshf.shp.000000.png");
         bulletImage = Raylib.LoadTexture("Data/Images/tyrian.shp.000000.png");
         enemyImage = Raylib.LoadTexture("Data/Images/tyrian.shp.007D3C.png");
+
+        // Audio loading
+        shootSound = Raylib.LoadSound("Data/Audio/shotSound1.mp3");
+        explotionSound = Raylib.LoadSound("Data/Audio/explosion1.mp3");
+        backgroundMusic = Raylib.LoadMusicStream("Data/Audio/backgroundMusic1.mp3");
+        Raylib.PlayMusicStream(backgroundMusic);
+
+        // Volume adjusting
+        Raylib.SetSoundVolume(shootSound, 0.6f);
 
         screenWidth = Raylib.GetScreenWidth();
         screenHeight = Raylib.GetScreenHeight();
@@ -79,9 +97,20 @@ class MainProgram
                     break;
             }
         }
+
+        // Unload pictures
+        Raylib.UnloadTexture(playerImage);
+        Raylib.UnloadTexture(bulletImage);
+        Raylib.UnloadTexture(enemyImage);
+
+        Raylib.UnloadMusicStream(backgroundMusic);
+        Raylib.CloseAudioDevice();
         Raylib.CloseWindow();
     }
 
+    /// <summary>
+    /// Updates the game
+    /// </summary>
     private void Update()
     {
         Movement(player.transform);
@@ -106,8 +135,14 @@ class MainProgram
         {
             RestartGame(true);
         }
+
+        // Background audio
+        Raylib.UpdateMusicStream(backgroundMusic);
     }
 
+    /// <summary>
+    /// Draws the game
+    /// </summary>
     private void Draw()
     {
         Raylib.BeginDrawing();
@@ -125,6 +160,7 @@ class MainProgram
             enemy.spriteRenderer.Draw();
         }
 
+        // I handle bullets here because I have the bullets position changes and drawing in the same method in bullet script
         HandleBullets(playerBullets, enemies, screenHeight, true);
         HandleBullets(enemyBullets, enemies, screenHeight, false);
 
@@ -166,17 +202,19 @@ class MainProgram
     }
 
     /// <summary>
-    /// Shoots a bullet from given objects location
+    /// Shoots a bullet (going upwards) from given objects location
     /// </summary>
     /// <param name="transform"></param>
     /// <param name="collision"></param>
     public void Shoot(Transform transform, Collision collision)
     {
+        // Limit how fast can be shot again
         if (Raylib.GetTime() > shotTime + 1)
         {
             Vector2 objectPos = transform.position;
             objectPos.X += collision.size.X / 2;
-            playerBullets.Add(new Bullet(objectPos, new Vector2(10, 10), 200, Color.Yellow, bulletImage, false, new Rectangle(2, 42, 8, 11)));
+            playerBullets.Add(new Bullet(objectPos, new Vector2(12, 12), 200, Color.Yellow, bulletImage, false, new Rectangle(2, 42, 8, 11)));
+            Raylib.PlaySound(shootSound);
             shotTime = Raylib.GetTime();
         }
     }
@@ -193,7 +231,8 @@ class MainProgram
             int randomEnemy = new Random().Next(0, enemyList.Count());
             Vector2 bulletPos = new Vector2(enemyList[randomEnemy].transform.position.X, EF.transform.position.Y + EF.collision.size.Y);
             bulletPos.X += enemyList[randomEnemy].collision.size.X / 2;
-            enemyBullets.Add(new Bullet(bulletPos, new Vector2(10, 10), -200, Color.Yellow, bulletImage, true, new Rectangle(2, 42, 8, 11)));
+            enemyBullets.Add(new Bullet(bulletPos, new Vector2(12, 12), -200, Color.Yellow, bulletImage, true, new Rectangle(2, 42, 8, 11)));
+            Raylib.PlaySound(shootSound);
             enemyShotTime = Raylib.GetTime();
         }
     }
@@ -204,7 +243,7 @@ class MainProgram
     /// <param name="bulletList"></param>
     /// <param name="enemyList"></param>
     /// <param name="screenHeight"></param>
-    /// <param name="isPlayerShooting"></param>
+    /// <param name="isPlayerShooting">Determines if we check does the bullet hit enemy or player</param>
     public void HandleBullets(List<Bullet> bulletList, List<Enemy> enemyList, int screenHeight, bool isPlayerShooting)
     {
         foreach (Bullet bullet in bulletList)
@@ -227,6 +266,7 @@ class MainProgram
                     {
                         bulletList.Remove(bullet);
                         enemyList.Remove(enemy);
+                        Raylib.PlaySound(explotionSound);
                         IncreaseScore(100, multiplier);
                         kills++;
                         ResizeEF(enemyFormation, enemyList);
@@ -236,9 +276,11 @@ class MainProgram
             }
             else
             {
+                // Checks if the bullet hits the player
                 if (Raylib.CheckCollisionRecs(bullet.spriterenderer.box, player.spriteRenderer.box))
                 {
                     bulletList.Remove(bullet);
+                    Raylib.PlaySound(explotionSound);
                     player.health--;
                     return;
                 }
@@ -325,8 +367,10 @@ class MainProgram
     /// <param name="enemies"></param>
     public void ResizeEF(EnemyFormation ef, List<Enemy> enemies)
     {
+        // Check if there are any enemies left
         if (enemies.Count <= 0) { return; }
 
+        // Set the variables to the first enemy on the list so that the left and top variables work
         float left = enemies[0].transform.position.X;
         float right = enemies[0].transform.position.X;
         float top = enemies[0].transform.position.Y;
@@ -334,7 +378,7 @@ class MainProgram
 
         foreach (Enemy enemy in enemies)
         {
-            // Looks for all the sides
+            // Looks for all the side positions
             if (enemy.transform.position.X < left)
             {
                 left = enemy.transform.position.X;
@@ -369,6 +413,7 @@ class MainProgram
 
         SetPlayer();
 
+        // If new level starts don't reset stats
         if (!isNewLevel)
         {
             score = 0;
