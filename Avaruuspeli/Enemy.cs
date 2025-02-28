@@ -4,6 +4,9 @@ using Raylib_cs;
 
 namespace Avaruuspeli;
 
+/// <summary>
+/// Enemy class that holds all the component that enemy needs
+/// </summary>
 public class Enemy
 {
     public Transform transform;
@@ -13,7 +16,7 @@ public class Enemy
     public Enemy(Vector2 position, Vector2 size, float speed, Color color, Texture2D sprite, bool rotate, Rectangle spriteSpot)
 	{
         transform = new Transform(position, speed);
-        collision = new Collision(transform, size);
+        collision = new Collision(size);
         spriteRenderer = new SpriteRenderer(transform, collision, color, sprite, rotate, spriteSpot);
     }
 

@@ -46,6 +46,7 @@ class MainProgram
 
     // Other variables
     GameState state;
+    bool win = false;
 
     /// <summary>
     /// Sets everything ready to start the game
@@ -93,7 +94,7 @@ class MainProgram
                     Draw();
                     break;
                 case GameState.ScoreScreen:
-                    ScoreScreen();
+                    ScoreScreen(win);
                     break;
             }
         }
@@ -138,7 +139,11 @@ class MainProgram
         // New round
         if (Raylib.IsKeyPressed(KeyboardKey.M) || enemies.Count <= 0)
         {
-            RestartGame(true);
+            //RestartGame(true);
+            roundTimer = Raylib.GetTime() - timer;
+            timer = Raylib.GetTime();
+            win = true;
+            state = GameState.ScoreScreen;
         }
 
         // Background audio
@@ -426,6 +431,8 @@ class MainProgram
             kills = 0;
         }
 
+        win = false;
+
         AddEnemies(5, 10);
         enemyFormation = new EnemyFormation(new Vector2(0, 0), new Vector2(0, 0), enemySpeed);
         ResizeEF(enemyFormation, enemies);
@@ -445,14 +452,23 @@ class MainProgram
     /// <summary>
     /// Show player stats from the last run
     /// </summary>
-    public void ScoreScreen()
+    public void ScoreScreen(bool win)
     {
         Raylib.BeginDrawing();
         Raylib.ClearBackground(Color.Black);
 
-        Vector2 gameoverTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Game Over", 70, 3);
+        if (win)
+        {
+            Vector2 gameoverTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Victory", 70, 3);
+            Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Victory",
+                new Vector2(screenWidth / 2 - gameoverTextSize.X / 2, screenHeight / 6), 70, 3, Color.Blue);
+        }
+        else
+        {
+            Vector2 gameoverTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Game Over", 70, 3);
         Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Game Over", 
             new Vector2(screenWidth / 2 - gameoverTextSize.X / 2, screenHeight / 6), 70, 3, Color.Red);
+        }
 
         Vector2 scoreTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Score: {score}", 50, 3);
         Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Score: {score}", 

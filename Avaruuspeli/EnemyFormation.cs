@@ -12,7 +12,7 @@ namespace Avaruuspeli
         public EnemyFormation(Vector2 position, Vector2 size, float speed)
         {
             transform = new Transform(position, speed);
-            collision = new Collision(transform, size);
+            collision = new Collision(size);
             enemyFormationRec = new Rectangle((int)transform.position.X, (int)transform.position.Y,
             (int)collision.size.X, (int)collision.size.Y);
         }

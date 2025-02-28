@@ -2,14 +2,15 @@
 using System.Numerics;
 
 namespace Avaruuspeli;
+/// <summary>
+/// Holds the size of the object
+/// </summary>
 public class Collision
 {
-	public Transform transfrom;
 	public Vector2 size;
 
-	public Collision(Transform transform, Vector2 size)
+	public Collision(Vector2 size)
 	{
-		this.transfrom = transform;
 		this.size = size;
 	}
 }

@@ -2,6 +2,9 @@
 using System.Numerics;
 
 namespace Avaruuspeli;
+/// <summary>
+/// Contains all the movement variables
+/// </summary>
 public class Transform
 {
 	public Vector2 position;

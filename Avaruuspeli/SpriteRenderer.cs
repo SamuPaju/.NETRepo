@@ -3,6 +3,9 @@ using System.Numerics;
 using Raylib_cs;
 
 namespace Avaruuspeli;
+/// <summary>
+/// Takes care of drawing objects
+/// </summary>
 public class SpriteRenderer
 {
 	public Transform transform;
