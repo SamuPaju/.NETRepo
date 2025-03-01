@@ -119,8 +119,9 @@ class MainProgram
     /// </summary>
     private void Update()
     {
-        Movement(player.transform);
-        KeepInsideScreen(player.transform, player.collision, screenWidth, screenHeight);
+        player.Movement();
+        player.KeepInsideScreen(screenWidth, screenHeight);
+
         if (Raylib.IsKeyPressed(KeyboardKey.Space))
         {
             Shoot(player.transform, player.collision);
@@ -175,40 +176,6 @@ class MainProgram
         HandleBullets(enemyBullets, enemies, screenHeight, false);
 
         Raylib.EndDrawing();
-    }
-
-
-    /// <summary>
-    /// Makes the movement for player
-    /// </summary>
-    /// <param name="transform"></param>
-    public void Movement(Transform transform)
-    {
-        if (Raylib.IsKeyDown(KeyboardKey.Left) || Raylib.IsKeyDown(KeyboardKey.A))
-        {
-            transform.position.X -= transform.speed * Raylib.GetFrameTime();
-        }
-        if (Raylib.IsKeyDown(KeyboardKey.Right) || Raylib.IsKeyDown(KeyboardKey.D))
-        {
-            transform.position.X += transform.speed * Raylib.GetFrameTime();
-        }
-    }
-
-    /// <summary>
-    /// Keeps player in the game area
-    /// </summary>
-    /// <param name="transfrom"></param>
-    /// <param name="collision"></param>
-    /// <param name="width">Screen width</param>
-    /// <param name="height">Screen height</param>
-    public void KeepInsideScreen(Transform transfrom, Collision collision, int width, int height)
-    {
-        float x = transfrom.position.X;
-        transfrom.position.X = Math.Clamp(x, 0, width - collision.size.X);
-        /*
-        float y = transfrom.position.Y;
-        transfrom.position.Y = Math.Clamp(y, 0, height - collision.size);
-        */
     }
 
     /// <summary>
