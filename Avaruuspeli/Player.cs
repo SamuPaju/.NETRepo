@@ -44,45 +44,35 @@ namespace Avaruuspeli
             //}
 
             // Acceleration movement
+            transform.direction = new Vector2(0, 0);
+            if (Raylib.IsKeyDown(KeyboardKey.Left) || Raylib.IsKeyDown(KeyboardKey.A))
+            {
+                transform.direction.X -= 1;
+            }
+            if (Raylib.IsKeyDown(KeyboardKey.Right) || Raylib.IsKeyDown(KeyboardKey.D))
+            {
+                transform.direction.X += 1;
+            }
+            if (Raylib.IsKeyDown(KeyboardKey.Up) || Raylib.IsKeyDown(KeyboardKey.W))
+            {
+                transform.direction.Y -= 1;
+            }
+            if (Raylib.IsKeyDown(KeyboardKey.Down) || Raylib.IsKeyDown(KeyboardKey.S))
+            {
+                transform.direction.Y += 1;
+            }
             // Slow movement if none of the keys are pressed
-            if (!(Raylib.IsKeyDown(KeyboardKey.Left) || Raylib.IsKeyDown(KeyboardKey.A) ||
-                Raylib.IsKeyDown(KeyboardKey.Right) || Raylib.IsKeyDown(KeyboardKey.D) || 
-                Raylib.IsKeyDown(KeyboardKey.Up) || Raylib.IsKeyDown(KeyboardKey.W) ||
-                Raylib.IsKeyDown(KeyboardKey.Down) || Raylib.IsKeyDown(KeyboardKey.S)))
-            {
-                velocity *= 0.9996f;
-            }
-            else
-            {
-                transform.direction = new Vector2(0, 0);
-                if (Raylib.IsKeyDown(KeyboardKey.Left) || Raylib.IsKeyDown(KeyboardKey.A))
-                {
-                    transform.direction.X -= 1;
-                }
-                if (Raylib.IsKeyDown(KeyboardKey.Right) || Raylib.IsKeyDown(KeyboardKey.D))
-                {
-                    transform.direction.X += 1;
-                }
-                if (Raylib.IsKeyDown(KeyboardKey.Up) || Raylib.IsKeyDown(KeyboardKey.W))
-                {
-                    transform.direction.Y -= 1;
-                }
-                if (Raylib.IsKeyDown(KeyboardKey.Down) || Raylib.IsKeyDown(KeyboardKey.S))
-                {
-                    transform.direction.Y += 1;
-                }
+            if (transform.direction == new Vector2(0, 0)) { velocity *= 0.9996f; }
 
-                acceleration = transform.direction * transform.speed;
-                velocity += acceleration * time;
+            acceleration = transform.direction * transform.speed;
+            velocity += acceleration * time;
 
-                // Check that the velocity doesn't go way too high or low
-                if (velocity.X < -maxSpeed) { velocity.X = -maxSpeed; }
-                if (velocity.X > maxSpeed) { velocity.X = maxSpeed; }
-                if (velocity.Y < -maxSpeed) { velocity.Y = -maxSpeed; }
-                if (velocity.Y > maxSpeed) { velocity.Y = maxSpeed; }
-            }
+            // Check that the velocity doesn't go way too high or low
+            if (velocity.X < -maxSpeed) { velocity.X = -maxSpeed; }
+            if (velocity.X > maxSpeed) { velocity.X = maxSpeed; }
+            if (velocity.Y < -maxSpeed) { velocity.Y = -maxSpeed; }
+            if (velocity.Y > maxSpeed) { velocity.Y = maxSpeed; }
 
-            Console.WriteLine(velocity);
             transform.position += velocity * time;
         }
 
