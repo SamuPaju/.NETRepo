@@ -20,6 +20,9 @@ class MainProgram
     double shotTime = -1;
     List<Bullet> playerBullets = new List<Bullet>();
 
+    // Camera
+    Camera2D camera;
+
     // Game stats
     int score;
     int multiplier = 1;
@@ -80,6 +83,12 @@ class MainProgram
         score = 0;
         kills = 0;
 
+        // Camera stuff
+        camera.Target = new Vector2(0, player.transform.position.Y);
+        camera.Offset = new Vector2(0, screenHeight * 0.7f);
+        camera.Rotation = 0f;
+        camera.Zoom = 1f;
+
         // Enemy stuff
         AddEnemies(5, 10);
         enemyFormation = new EnemyFormation(new Vector2(0, 0), new Vector2(0, 0), enemySpeed);
@@ -121,6 +130,8 @@ class MainProgram
         player.Movement();
         player.KeepInsideScreen(screenWidth, screenHeight);
 
+        camera.Target = new Vector2(0, player.transform.position.Y);
+
         if (Raylib.IsKeyPressed(KeyboardKey.Space))
         {
             Shoot(player.transform, player.collision);
@@ -157,6 +168,8 @@ class MainProgram
     {
         Raylib.BeginDrawing();
         Raylib.ClearBackground(Color.Black);
+        Raylib.BeginMode2D(camera);
+
 
         player.spriteRenderer.Draw();
 
@@ -170,10 +183,11 @@ class MainProgram
             enemy.spriteRenderer.Draw();
         }
 
-        // I handle bullets here because I have the bullets position changes and drawing in the same method in bullet script
+        // Bullets are handled here because I have the bullets position changes and drawing in the same method in bullet script
         HandleBullets(playerBullets, enemies, screenHeight, true);
         HandleBullets(enemyBullets, enemies, screenHeight, false);
 
+        Raylib.EndMode2D();
         Raylib.EndDrawing();
     }
 
