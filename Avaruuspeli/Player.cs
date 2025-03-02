@@ -14,6 +14,10 @@ namespace Avaruuspeli
         public SpriteRenderer spriteRenderer;
         public int health;
 
+        Vector2 velocity;
+        Vector2 acceleration;
+        float maxSpeed = 100;
+
         public Player(Vector2 position, Vector2 size, float speed, Color color, Texture2D sprite, bool rotate, Rectangle spriteSpot)
         {
             transform = new Transform(position, speed);
@@ -27,14 +31,59 @@ namespace Avaruuspeli
         /// </summary>
         public void Movement()
         {
-            if (Raylib.IsKeyDown(KeyboardKey.Left) || Raylib.IsKeyDown(KeyboardKey.A))
+            float time = Raylib.GetFrameTime();
+
+            // Easy movement
+            //if (Raylib.IsKeyDown(KeyboardKey.Left) || Raylib.IsKeyDown(KeyboardKey.A))
+            //{
+            //    transform.position.X -= transform.speed * Raylib.GetFrameTime();
+            //}
+            //if (Raylib.IsKeyDown(KeyboardKey.Right) || Raylib.IsKeyDown(KeyboardKey.D))
+            //{
+            //    transform.position.X += transform.speed * Raylib.GetFrameTime();
+            //}
+
+            // Acceleration movement
+            // Slow movement if none of the keys are pressed
+            if (!(Raylib.IsKeyDown(KeyboardKey.Left) || Raylib.IsKeyDown(KeyboardKey.A) ||
+                Raylib.IsKeyDown(KeyboardKey.Right) || Raylib.IsKeyDown(KeyboardKey.D) || 
+                Raylib.IsKeyDown(KeyboardKey.Up) || Raylib.IsKeyDown(KeyboardKey.W) ||
+                Raylib.IsKeyDown(KeyboardKey.Down) || Raylib.IsKeyDown(KeyboardKey.S)))
             {
-                transform.position.X -= transform.speed * Raylib.GetFrameTime();
+                velocity *= 0.9996f;
             }
-            if (Raylib.IsKeyDown(KeyboardKey.Right) || Raylib.IsKeyDown(KeyboardKey.D))
+            else
             {
-                transform.position.X += transform.speed * Raylib.GetFrameTime();
+                transform.direction = new Vector2(0, 0);
+                if (Raylib.IsKeyDown(KeyboardKey.Left) || Raylib.IsKeyDown(KeyboardKey.A))
+                {
+                    transform.direction.X -= 1;
+                }
+                if (Raylib.IsKeyDown(KeyboardKey.Right) || Raylib.IsKeyDown(KeyboardKey.D))
+                {
+                    transform.direction.X += 1;
+                }
+                if (Raylib.IsKeyDown(KeyboardKey.Up) || Raylib.IsKeyDown(KeyboardKey.W))
+                {
+                    transform.direction.Y -= 1;
+                }
+                if (Raylib.IsKeyDown(KeyboardKey.Down) || Raylib.IsKeyDown(KeyboardKey.S))
+                {
+                    transform.direction.Y += 1;
+                }
+
+                acceleration = transform.direction * transform.speed;
+                velocity += acceleration * time;
+
+                // Check that the velocity doesn't go way too high or low
+                if (velocity.X < -maxSpeed) { velocity.X = -maxSpeed; }
+                if (velocity.X > maxSpeed) { velocity.X = maxSpeed; }
+                if (velocity.Y < -maxSpeed) { velocity.Y = -maxSpeed; }
+                if (velocity.Y > maxSpeed) { velocity.Y = maxSpeed; }
             }
+
+            Console.WriteLine(velocity);
+            transform.position += velocity * time;
         }
 
         /// <summary>

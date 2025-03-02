@@ -108,7 +108,6 @@ class MainProgram
         Raylib.UnloadSound(shootSound);
         Raylib.UnloadSound(explotionSound);
         Raylib.UnloadMusicStream(backgroundMusic);
-        Raylib.UnloadMusicStream(backgroundMusic);
         Raylib.CloseAudioDevice();
 
         Raylib.CloseWindow();

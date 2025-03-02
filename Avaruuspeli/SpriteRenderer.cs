@@ -14,7 +14,7 @@ public class SpriteRenderer
 	public Rectangle box;
 	Texture2D sprite;
 	bool rotate;
-	Rectangle spriteSpot;
+	public Rectangle spriteSpot;
 
 
     public SpriteRenderer(Transform transform, Collision collision, Color color, Texture2D sprite, bool rotate, Rectangle spriteSpot)
@@ -58,6 +58,9 @@ public class SpriteRenderer
 			Raylib.DrawTextureNPatch(sprite, nPatchInfo, box, new Vector2(box.Width, box.Height), 180, Color.White);
 		}
 		// Else we will draw the image normally
-		else { Raylib.DrawTextureNPatch(sprite, nPatchInfo, box, new Vector2(0, 0), 0, Color.White); }            
+		else { Raylib.DrawTextureNPatch(sprite, nPatchInfo, box, new Vector2(0, 0), 0, Color.White); }
+		
+		// ---Muuta tähän tai ainakin selvitä miks ei muka toimis---
+		//Raylib.DrawTexturePro();
 	}
 }
