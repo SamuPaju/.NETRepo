@@ -246,7 +246,7 @@ class MainProgram
             bullet.Handler();
 
             // Removes bullets that go out of window
-            if (bullet.transfrom.position.Y <= -10 || bullet.transfrom.position.Y >= screenHeight + 10)
+            if (bullet.transfrom.position.Y <= (cameraPos.Y - 10) || bullet.transfrom.position.Y >= (screenHeight + cameraPos.Y + 10))
             {
                 bulletList.Remove(bullet);
                 return;
@@ -484,6 +484,6 @@ class MainProgram
     void SetPlayer()
     {
         player = new Player(new Vector2(screenWidth / 2, screenHeight * 0.85f),
-            new Vector2(25, 25), 100, playerImage, true, new Rectangle(26, 0, 24, 26));
+            new Vector2(30, 30), 100, playerImage, true, new Rectangle(26, 0, 24, 26));
     }
 }
