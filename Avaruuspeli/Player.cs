@@ -87,7 +87,7 @@ namespace Avaruuspeli
             transform.position.X = Math.Clamp(x, 0, width - collision.size.X);
             
             float y = transform.position.Y;
-            transform.position.Y = Math.Clamp(y, 0, height - collision.size.Y);            
+            //transform.position.Y = Math.Clamp(y, 0, height - collision.size.Y);            
         }
     }
 }

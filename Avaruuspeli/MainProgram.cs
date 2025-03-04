@@ -22,6 +22,8 @@ class MainProgram
 
     // Camera
     Camera2D camera;
+    Vector2 cameraPos;
+    float forwardSpeed;
 
     // Game stats
     int score;
@@ -34,7 +36,7 @@ class MainProgram
     List<Enemy> enemies = new List<Enemy>();
     double enemyShotTime = -1;
     List<Bullet> enemyBullets = new List<Bullet>();
-    float enemySpeed = 25;
+    float enemySpeed = 0;//25;
     EnemyFormation enemyFormation;
 
     // Sprites
@@ -84,10 +86,12 @@ class MainProgram
         kills = 0;
 
         // Camera stuff
-        camera.Target = new Vector2(0, player.transform.position.Y);
-        camera.Offset = new Vector2(0, screenHeight * 0.7f);
+        cameraPos = new Vector2(0, 0);
+        camera.Target = cameraPos;
+        camera.Offset = new Vector2(0, 0);
         camera.Rotation = 0f;
         camera.Zoom = 1f;
+        forwardSpeed = 25;
 
         // Enemy stuff
         AddEnemies(5, 10);
@@ -130,8 +134,10 @@ class MainProgram
         player.Movement();
         player.KeepInsideScreen(screenWidth, screenHeight);
 
-        camera.Target = new Vector2(0, player.transform.position.Y);
+        camera.Target = cameraPos;
+        cameraPos.Y -= forwardSpeed * Raylib.GetFrameTime();
 
+        // Shoot
         if (Raylib.IsKeyPressed(KeyboardKey.Space))
         {
             Shoot(player.transform, player.collision);
@@ -168,15 +174,14 @@ class MainProgram
     {
         Raylib.BeginDrawing();
         Raylib.ClearBackground(Color.Black);
-        Raylib.BeginMode2D(camera);
 
+        Raylib.BeginMode2D(camera);
 
         player.spriteRenderer.Draw();
 
         // A rectangle to show where the EnemyFormations edges are
         //Raylib.DrawRectangle((int)enemyFormation.transform.position.X, (int)enemyFormation.transform.position.Y, 
         //    (int)enemyFormation.collision.size.X, (int)enemyFormation.collision.size.Y, Color.Green);
-
 
         foreach (Enemy enemy in enemies)
         {
@@ -402,6 +407,8 @@ class MainProgram
         state = GameState.Play;
 
         SetPlayer();
+
+        cameraPos = new Vector2(0, 0);
 
         // If new level starts don't reset stats
         if (!isNewLevel)
