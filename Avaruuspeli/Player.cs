@@ -18,11 +18,11 @@ namespace Avaruuspeli
         Vector2 acceleration;
         float maxSpeed = 100;
 
-        public Player(Vector2 position, Vector2 size, float speed, Color color, Texture2D sprite, bool rotate, Rectangle spriteSpot)
+        public Player(Vector2 position, Vector2 size, float speed, Texture2D sprite, bool rotate, Rectangle spriteSpot)
         {
             transform = new Transform(position, speed);
             collision = new Collision(size);
-            spriteRenderer = new SpriteRenderer(transform, collision, color, sprite, rotate, spriteSpot);
+            spriteRenderer = new SpriteRenderer(transform, collision, sprite, rotate, spriteSpot);
             health = 3;
         }
 

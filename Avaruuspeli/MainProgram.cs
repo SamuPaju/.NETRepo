@@ -208,7 +208,7 @@ class MainProgram
         {
             Vector2 objectPos = transform.position;
             objectPos.X += collision.size.X / 2;
-            playerBullets.Add(new Bullet(objectPos, new Vector2(12, 12), 200, Color.Yellow, bulletImage, false, new Rectangle(2, 42, 8, 11)));
+            playerBullets.Add(new Bullet(objectPos, new Vector2(12, 12), 200, bulletImage, false, new Rectangle(2, 42, 8, 11)));
             Raylib.PlaySound(shootSound);
             shotTime = Raylib.GetTime();
         }
@@ -226,7 +226,7 @@ class MainProgram
             int randomEnemy = new Random().Next(0, enemyList.Count());
             Vector2 bulletPos = new Vector2(enemyList[randomEnemy].transform.position.X, EF.transform.position.Y + EF.collision.size.Y);
             bulletPos.X += enemyList[randomEnemy].collision.size.X / 2;
-            enemyBullets.Add(new Bullet(bulletPos, new Vector2(12, 12), -200, Color.Yellow, bulletImage, true, new Rectangle(2, 42, 8, 11)));
+            enemyBullets.Add(new Bullet(bulletPos, new Vector2(12, 12), -200, bulletImage, true, new Rectangle(2, 42, 8, 11)));
             Raylib.PlaySound(shootSound);
             enemyShotTime = Raylib.GetTime();
         }
@@ -306,7 +306,7 @@ class MainProgram
             {
                 Vector2 spawnPos = new Vector2(spawnX, spawnY);
                 enemies.Add(new Enemy(spawnPos, new Vector2(enemySize, enemySize), 
-                    enemySpeed, Color.Red, enemyImage, false, new Rectangle(27,202,15,21)));
+                    enemySpeed, enemyImage, false, new Rectangle(27,202,15,21)));
                 spawnX += enemySize + spaceBetween;
             }
             spawnY += enemySize + spaceBetween;
@@ -484,6 +484,6 @@ class MainProgram
     void SetPlayer()
     {
         player = new Player(new Vector2(screenWidth / 2, screenHeight * 0.85f),
-            new Vector2(25, 25), 100, Color.White, playerImage, true, new Rectangle(26, 0, 24, 26));
+            new Vector2(25, 25), 100, playerImage, true, new Rectangle(26, 0, 24, 26));
     }
 }

@@ -10,18 +10,16 @@ public class SpriteRenderer
 {
 	public Transform transform;
 	public Collision collision;
-	public Color color;
 	public Rectangle box;
 	Texture2D sprite;
 	bool rotate;
 	public Rectangle spriteSpot;
 
 
-    public SpriteRenderer(Transform transform, Collision collision, Color color, Texture2D sprite, bool rotate, Rectangle spriteSpot)
+    public SpriteRenderer(Transform transform, Collision collision, Texture2D sprite, bool rotate, Rectangle spriteSpot)
 	{
 		this.transform = transform;
 		this.collision = collision;
-		this.color = color;
 		this.sprite = sprite;
 		this.rotate = rotate;
 		this.spriteSpot = spriteSpot;
@@ -30,7 +28,7 @@ public class SpriteRenderer
 	public void Draw()
 	{
 		box = new Rectangle((int)transform.position.X, (int)transform.position.Y, collision.size.X, collision.size.Y);
-        Raylib.DrawRectangleRec(box, color);
+        //Raylib.DrawRectangleRec(box, color);
 
 		// Hole picture
 		//Raylib.DrawTextureV(sprite, transform.position, Color.White);
