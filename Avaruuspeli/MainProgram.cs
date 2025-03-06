@@ -23,7 +23,7 @@ class MainProgram
     // Camera
     Camera2D camera;
     Vector2 cameraPos;
-    float forwardSpeed;
+    float forwardSpeed = -25;
 
     // Game stats
     int score;
@@ -91,7 +91,6 @@ class MainProgram
         camera.Offset = new Vector2(0, 0);
         camera.Rotation = 0f;
         camera.Zoom = 1f;
-        forwardSpeed = 25;
 
         // Enemy stuff
         AddEnemies(5, 10);
@@ -135,18 +134,15 @@ class MainProgram
         player.KeepInsideScreen(screenWidth, screenHeight);
 
         camera.Target = cameraPos;
-        cameraPos.Y -= forwardSpeed * Raylib.GetFrameTime();
+        cameraPos.Y += forwardSpeed * Raylib.GetFrameTime();
 
         // Shoot
-        if (Raylib.IsKeyPressed(KeyboardKey.Space))
-        {
-            Shoot(player.transform, player.collision);
-        }
+        if (Raylib.IsKeyPressed(KeyboardKey.Space)) { Shoot(player.transform, player.collision); }
         EnemyHandler(enemies, enemyFormation, screenWidth);
         EnemyShoot(enemies, enemyFormation);
 
         // Game over
-        if (Raylib.CheckCollisionRecs(enemyFormation.enemyFormationRec, player.spriteRenderer.box) || Raylib.IsKeyPressed(KeyboardKey.Escape) || player.health <= 0)
+        if (Raylib.IsKeyPressed(KeyboardKey.Escape) || player.health <= 0)
         {
             roundTimer = Raylib.GetTime() - timer;
             timer = Raylib.GetTime();
@@ -188,7 +184,8 @@ class MainProgram
             enemy.spriteRenderer.Draw();
         }
 
-        // Bullets are handled here because I have the bullets position changes and drawing in the same method in bullet script
+        // Bullets are handled here because I have the bullets position changes and drawing
+        // in the same method in bullet script
         HandleBullets(playerBullets, enemies, screenHeight, true);
         HandleBullets(enemyBullets, enemies, screenHeight, false);
 
@@ -484,6 +481,7 @@ class MainProgram
     void SetPlayer()
     {
         player = new Player(new Vector2(screenWidth / 2, screenHeight * 0.85f),
-            new Vector2(30, 30), 100, playerImage, true, new Rectangle(26, 0, 24, 26));
+            new Vector2(30, 30), 100, playerImage, true, new Rectangle(26, 0, 24, 26),
+            new Vector2(0, forwardSpeed));
     }
 }

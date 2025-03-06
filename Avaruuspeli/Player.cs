@@ -17,13 +17,15 @@ namespace Avaruuspeli
         Vector2 velocity;
         Vector2 acceleration;
         float maxSpeed = 100;
+        Vector2 levelSpeed;
 
-        public Player(Vector2 position, Vector2 size, float speed, Texture2D sprite, bool rotate, Rectangle spriteSpot)
+        public Player(Vector2 position, Vector2 size, float speed, Texture2D sprite, bool rotate, Rectangle spriteSpot, Vector2 levelSpeed)
         {
             transform = new Transform(position, speed);
             collision = new Collision(size);
             spriteRenderer = new SpriteRenderer(transform, collision, sprite, rotate, spriteSpot);
             health = 3;
+            this.levelSpeed = levelSpeed;
         }
 
         /// <summary>
@@ -64,7 +66,7 @@ namespace Avaruuspeli
             // Slow movement if none of the keys are pressed
             if (transform.direction == new Vector2(0, 0)) { velocity *= 0.9996f; }
 
-            acceleration = transform.direction * transform.speed;
+            acceleration = transform.direction * transform.speed + levelSpeed;//new Vector2(0, -25);
             velocity += acceleration * time;
 
             // Check that the velocity doesn't go way too high or low
