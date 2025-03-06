@@ -131,7 +131,7 @@ class MainProgram
     private void Update()
     {
         player.Movement();
-        player.KeepInsideScreen(screenWidth, screenHeight);
+        player.KeepInsideScreen(screenWidth, screenHeight, cameraPos);
 
         camera.Target = cameraPos;
         cameraPos.Y += forwardSpeed * Raylib.GetFrameTime();

@@ -83,13 +83,13 @@ namespace Avaruuspeli
         /// </summary>
         /// <param name="width">Screen width</param>
         /// <param name="height">Screen height</param>
-        public void KeepInsideScreen(int width, int height)
+        public void KeepInsideScreen(int width, int height, Vector2 cameraPos)
         {
             float x = transform.position.X;
             transform.position.X = Math.Clamp(x, 0, width - collision.size.X);
             
             float y = transform.position.Y;
-            //transform.position.Y = Math.Clamp(y, 0, height - collision.size.Y);            
+            transform.position.Y = Math.Clamp(y, cameraPos.Y, height + cameraPos.Y - collision.size.Y);            
         }
     }
 }
