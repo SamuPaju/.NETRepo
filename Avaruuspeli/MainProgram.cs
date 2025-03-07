@@ -181,7 +181,13 @@ class MainProgram
 
         foreach (Enemy enemy in enemies)
         {
-            enemy.spriteRenderer.Draw();
+            Vector2 enemyScreenPos = Raylib.GetWorldToScreen2D(enemy.transform.position, camera);
+
+            if (enemyScreenPos.Y + enemy.collision.size.Y > cameraPos.Y && enemyScreenPos.Y < screenHeight
+                && enemyScreenPos.X + enemy.collision.size.X > cameraPos.X && enemyScreenPos.X < screenWidth)
+            {
+                enemy.spriteRenderer.Draw();
+            }
         }
 
         // Bullets are handled here because I have the bullets position changes and drawing
