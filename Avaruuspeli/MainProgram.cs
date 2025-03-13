@@ -33,7 +33,7 @@ class MainProgram
     double timer = 0;
 
     // Enemy
-    List<Enemy> enemies = new List<Enemy>();
+    List<EnemyT> enemies = new List<EnemyT>();
     double enemyShotTime = -1;
     List<Bullet> enemyBullets = new List<Bullet>();
     float enemySpeed = 0;//25;
@@ -179,7 +179,7 @@ class MainProgram
         //Raylib.DrawRectangle((int)enemyFormation.transform.position.X, (int)enemyFormation.transform.position.Y, 
         //    (int)enemyFormation.collision.size.X, (int)enemyFormation.collision.size.Y, Color.Green);
 
-        foreach (Enemy enemy in enemies)
+        foreach (EnemyT enemy in enemies)
         {
             Vector2 enemyScreenPos = Raylib.GetWorldToScreen2D(enemy.transform.position, camera);
 
@@ -222,7 +222,7 @@ class MainProgram
     /// </summary>
     /// <param name="enemyList"></param>
     /// <param name="EF">EnemyFormation</param>
-    public void EnemyShoot(List<Enemy> enemyList, EnemyFormation EF)
+    public void EnemyShoot(List<EnemyT> enemyList, EnemyFormation EF)
     {
         if (Raylib.GetTime() > enemyShotTime + 2)
         {
@@ -242,7 +242,7 @@ class MainProgram
     /// <param name="enemyList"></param>
     /// <param name="screenHeight"></param>
     /// <param name="isPlayerShooting">Determines if we check does the bullet hit enemy or player</param>
-    public void HandleBullets(List<Bullet> bulletList, List<Enemy> enemyList, int screenHeight, bool isPlayerShooting)
+    public void HandleBullets(List<Bullet> bulletList, List<EnemyT> enemyList, int screenHeight, bool isPlayerShooting)
     {
         foreach (Bullet bullet in bulletList)
         {
@@ -258,7 +258,7 @@ class MainProgram
             if (isPlayerShooting == true)
             {
                 // Checks if a bullet hits an enemy
-                foreach (Enemy enemy in enemyList)
+                foreach (EnemyT enemy in enemyList)
                 {
                     if (Raylib.CheckCollisionRecs(bullet.spriterenderer.box, enemy.spriteRenderer.box))
                     {
@@ -308,7 +308,7 @@ class MainProgram
             for (int column = 0; column < columns; column++)
             {
                 Vector2 spawnPos = new Vector2(spawnX, spawnY);
-                enemies.Add(new Enemy(spawnPos, new Vector2(enemySize, enemySize), 
+                enemies.Add(new EnemyT(spawnPos, new Vector2(enemySize, enemySize), 
                     enemySpeed, enemyImage, false, new Rectangle(27,202,15,21)));
                 spawnX += enemySize + spaceBetween;
             }
@@ -322,12 +322,12 @@ class MainProgram
     /// <param name="enemyList"></param>
     /// <param name="EF">EnemyFormation</param>
     /// <param name="screenWidth"></param>
-    public void EnemyHandler(List<Enemy> enemyList, EnemyFormation EF, int screenWidth)
+    public void EnemyHandler(List<EnemyT> enemyList, EnemyFormation EF, int screenWidth)
     {
         int downMovement = 50;
 
         EF.transform.position.X += EF.transform.speed * Raylib.GetFrameTime();
-        foreach (Enemy enemy in enemyList)
+        foreach (EnemyT enemy in enemyList)
         {
             enemy.transform.position.X += enemy.transform.speed * Raylib.GetFrameTime();
         }
@@ -336,7 +336,7 @@ class MainProgram
         {
             EF.transform.position.X -= 1;
             EF.transform.speed *= -1;
-            foreach (Enemy enemy in enemyList)
+            foreach (EnemyT enemy in enemyList)
             {
                 enemy.transform.position.X -= 1;
                 enemy.transform.speed *= -1;
@@ -348,7 +348,7 @@ class MainProgram
         {
             EF.transform.position.X += 1;
             EF.transform.speed *= -1;
-            foreach (Enemy enemy in enemyList)
+            foreach (EnemyT enemy in enemyList)
             {
                 enemy.transform.position.X += 1;
                 enemy.transform.speed *= -1;
@@ -363,7 +363,7 @@ class MainProgram
     /// </summary>
     /// <param name="ef">EnemyFormation</param>
     /// <param name="enemies"></param>
-    public void ResizeEF(EnemyFormation ef, List<Enemy> enemies)
+    public void ResizeEF(EnemyFormation ef, List<EnemyT> enemies)
     {
         // Check if there are any enemies left
         if (enemies.Count <= 0) { return; }
@@ -374,7 +374,7 @@ class MainProgram
         float top = enemies[0].transform.position.Y;
         float bottom = enemies[0].transform.position.Y;
 
-        foreach (Enemy enemy in enemies)
+        foreach (EnemyT enemy in enemies)
         {
             // Looks for all the side positions
             if (enemy.transform.position.X < left)
@@ -406,7 +406,7 @@ class MainProgram
     {
         playerBullets = new List<Bullet>();
         enemyBullets = new List<Bullet>();
-        enemies = new List<Enemy>();
+        enemies = new List<EnemyT>();
         state = GameState.Play;
 
         SetPlayer();

@@ -1,28 +1,41 @@
-﻿using System;
+﻿using Raylib_cs;
+using System.Collections.Generic;
 using System.Numerics;
-using Raylib_cs;
 
 namespace Avaruuspeli;
 
-/// <summary>
-/// Enemy class that holds all the component that enemy needs
-/// </summary>
-public class Enemy
+class Enemy
 {
     public Transform transform;
     public Collision collision;
     public SpriteRenderer spriteRenderer;
+    public bool active;
 
-    public Enemy(Vector2 position, Vector2 size, float speed, Texture2D sprite, bool rotate, Rectangle spriteSpot)
-	{
-        transform = new Transform(position, speed);
-        collision = new Collision(size);
+    Vector2 velocity;
+    Vector2 acceleration;
+    float maxSpeed = 100;
+
+    public Enemy(Rectangle frame, float speed, Texture2D sprite, bool rotate, Rectangle spriteSpot)
+    {
+        transform = new Transform(frame.Position, speed);
+        collision = new Collision(frame.Size);
         spriteRenderer = new SpriteRenderer(transform, collision, sprite, rotate, spriteSpot);
     }
 
-    /* Useless (Just do it in the main program)
-    public void ChangeDirection()
+    public void Movement()
     {
-        transform.speed *= -1;
-    }*/
+        float time = Raylib.GetFrameTime();
+
+        acceleration = transform.direction * transform.speed;// + levelSpeed;
+        velocity += acceleration * time;
+
+        // Check that the velocity doesn't go way too high or low
+        if (velocity.X < -maxSpeed) { velocity.X = -maxSpeed; }
+        if (velocity.X > maxSpeed) { velocity.X = maxSpeed; }
+        if (velocity.Y < -maxSpeed) { velocity.Y = -maxSpeed; }
+        if (velocity.Y > maxSpeed) { velocity.Y = maxSpeed; }
+
+        transform.position += velocity * time;
+    }
+    
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using Raylib_cs;
 
 namespace Avaruuspeli;
@@ -36,19 +35,6 @@ public class SpriteRenderer
 		// Part of a picture
 		//Rectangle sourceRec = new Rectangle(new Vector2(100, 57), new Vector2(20, 25));
 		//Raylib.DrawTextureRec(sprite, sourceRec, transform.position, Color.White);
-
-		// Part of the picture better
-		NPatchInfo nPatchInfo = new NPatchInfo()
-		{
-			// What part of the picture
-			Source = spriteSpot,
-
-			// How much scaling (propably???)
-			Left = 0,
-			Top = 0,
-			Right = 0,
-			Bottom = 0
-		};
 
 		// If rotate is true we will turn the image and set the origin to the down right corner
 		if (rotate)
