@@ -34,8 +34,16 @@ class MainProgram
 
     // Enemy Tyrian
     List<Enemy> enemyList = new List<Enemy>();
-    Enemy testEnemy;
     List<Bullet> enemyBullets = new List<Bullet>();
+    List<Vector2> enemySpawnLocations = new List<Vector2>()
+    {
+        new Vector2(100, -100),
+        new Vector2(100, -200), new Vector2(300, -200),
+        new Vector2(100, -100), new Vector2(200, -100),
+        new Vector2(300, -300), new Vector2(100, -300),
+        new Vector2(200, -500), new Vector2(600, -500),
+        new Vector2(200, -600), new Vector2(300, -600)
+    };
 
     // Sprites
     Texture2D playerImage;
@@ -90,11 +98,8 @@ class MainProgram
         camera.Rotation = 0f;
         camera.Zoom = 1f;
 
-        // Enemy stuff
+        // Enemy stuff        
         AddEnemies();
-
-        testEnemy = new Enemy(new Rectangle(75, 50, 25 , 25), 25, enemyImage, false, 
-            new Rectangle(27, 202, 15, 21), new Vector2(0, forwardSpeed));
 
         while (Raylib.WindowShouldClose() == false)
         {
@@ -129,13 +134,14 @@ class MainProgram
     /// </summary>
     private void Update()
     {
-        testEnemy.Movement();
-
         player.Movement();
         player.KeepInsideScreen(screenWidth, screenHeight, cameraPos);
 
         camera.Target = cameraPos;
         cameraPos.Y += forwardSpeed * Raylib.GetFrameTime();
+        //Console.WriteLine(cameraPos);
+
+        foreach (Enemy enemy in enemyList) { enemy.Update(); }
 
         // Shoot
         if (Raylib.IsKeyPressed(KeyboardKey.Space)) { Shoot(player.transform, player.collision); }
@@ -150,7 +156,7 @@ class MainProgram
         }
 
         // New round
-        if (Raylib.IsKeyPressed(KeyboardKey.M) || enemyList.Count <= 0)
+        if (Raylib.IsKeyPressed(KeyboardKey.M))// || enemyList.Count <= 0)
         {
             //RestartGame(true);
             roundTimer = Raylib.GetTime() - timer;
@@ -183,14 +189,14 @@ class MainProgram
         {
             Vector2 enemyScreenPos = Raylib.GetWorldToScreen2D(enemy.transform.position, camera);
 
-            if (enemyScreenPos.Y + enemy.collision.size.Y > cameraPos.Y && enemyScreenPos.Y < screenHeight
+            if (enemyScreenPos.Y - enemy.collision.size.Y > cameraPos.Y && enemyScreenPos.Y < screenHeight
                 && enemyScreenPos.X + enemy.collision.size.X > cameraPos.X && enemyScreenPos.X < screenWidth)
             {
+                enemy.active = true;
                 enemy.spriteRenderer.Draw();
             }
+            else { enemy.active = false; }
         }
-
-        testEnemy.spriteRenderer.Draw();
 
         // Bullets are handled here because I have the bullets position changes and drawing
         // in the same method in bullet script
@@ -232,16 +238,6 @@ class MainProgram
                 enemy.lastShotTime = Raylib.GetTime();
             }
         }
-
-        /*for (int i = 0; i < enemyList.Count; i++)
-        {
-            if (enemyList[i].active && enemyShotTime > 5)
-            {
-                Vector2 bulletPos = new Vector2(0, 0);
-                enemyBullets.Add(new Bullet(bulletPos, new Vector2(12, 12), -200, bulletImage, true, new Rectangle(2, 42, 8, 11)));
-                Raylib.PlaySound(shootSound);
-            }
-        }*/
     }
 
     /// <summary>
@@ -295,11 +291,15 @@ class MainProgram
     }
 
     /// <summary>
-    /// Adds enemies to the window
+    /// Adds enemies to the level
     /// </summary>
     public void AddEnemies()
     {
-        
+        foreach (Vector2 spot in enemySpawnLocations)
+        {
+            enemyList.Add(new Enemy(new Rectangle(spot, 25, 25), 25, enemyImage, false,
+            new Rectangle(27, 202, 15, 21), new Vector2(0, forwardSpeed), true, true, 1.5f));
+        }
     }
 
     /// <summary>

@@ -75,6 +75,8 @@ namespace Avaruuspeli
             if (velocity.Y < -maxSpeed) { velocity.Y = -maxSpeed; }
             if (velocity.Y > maxSpeed) { velocity.Y = maxSpeed; }
 
+            //Console.WriteLine(transform.position);
+
             transform.position += velocity * time;
         }
 

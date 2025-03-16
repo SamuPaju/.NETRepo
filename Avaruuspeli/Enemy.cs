@@ -11,7 +11,7 @@ class Enemy
 
     public bool active;
     public bool shooter;
-    public bool mover = true;
+    public bool mover;
 
     int screenWidth;
 
@@ -21,9 +21,10 @@ class Enemy
     Vector2 levelSpeed;
 
     public double lastShotTime;
-    public float firerate = 1;
+    public float firerate = 1.5f;
 
-    public Enemy(Rectangle frame, float speed, Texture2D sprite, bool rotate, Rectangle spriteSpot, Vector2 levelSpeed)
+    public Enemy(Rectangle frame, float speed, Texture2D sprite, bool rotate, 
+        Rectangle spriteSpot, Vector2 levelSpeed, bool mover, bool shooter, float firerate)
     {
         transform = new Transform(frame.Position, speed);
         collision = new Collision(frame.Size);
@@ -32,21 +33,33 @@ class Enemy
         this.screenWidth = Raylib.GetScreenWidth();
         this.levelSpeed = levelSpeed;
 
+        this.mover = mover;
+        this.shooter = shooter;
+        this.firerate = firerate;
+
         if (mover) { transform.direction.X += 1; }
         transform.direction.Y += 1;
     }
 
-    public void Movement()
+    public void Update()
+    {
+        if (active)
+        {
+            Movement();
+        }
+    }
+
+    void Movement()
     {
         float time = Raylib.GetFrameTime();
 
         if (mover)
         {
-            if (transform.position.X < 50)
+            if (transform.position.X < collision.size.X / 2)
             {
                 transform.direction.X += 1;
             }
-            if (transform.position.X > screenWidth - 50)
+            if (transform.position.X > screenWidth - collision.size.X)
             {
                 transform.direction.X -= 1;
             }
@@ -65,8 +78,5 @@ class Enemy
 
         //Console.WriteLine(velocity);
         transform.position += velocity * time;
-    }
-
-    
-    
+    }       
 }
