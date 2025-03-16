@@ -39,6 +39,10 @@ class MainProgram
     float enemySpeed = 0;//25;
     EnemyFormation enemyFormation;
 
+    // Enemy Tyrian
+    List<Enemy> enemyList = new List<Enemy>();
+    Enemy testEnemy;
+
     // Sprites
     Texture2D playerImage;
     Texture2D bulletImage;
@@ -97,6 +101,9 @@ class MainProgram
         enemyFormation = new EnemyFormation(new Vector2(0, 0), new Vector2(0, 0), enemySpeed);
         ResizeEF(enemyFormation, enemies);
 
+        testEnemy = new Enemy(new Rectangle(75, 50, 20 , 20), 25, enemyImage, false, 
+            new Rectangle(27, 202, 15, 21), new Vector2(0, forwardSpeed));
+
         while (Raylib.WindowShouldClose() == false)
         {
             switch (state)
@@ -130,6 +137,8 @@ class MainProgram
     /// </summary>
     private void Update()
     {
+        testEnemy.Movement();
+
         player.Movement();
         player.KeepInsideScreen(screenWidth, screenHeight, cameraPos);
 
@@ -190,6 +199,8 @@ class MainProgram
             }
         }
 
+        testEnemy.spriteRenderer.Draw();
+
         // Bullets are handled here because I have the bullets position changes and drawing
         // in the same method in bullet script
         HandleBullets(playerBullets, enemies, screenHeight, true);
@@ -233,6 +244,31 @@ class MainProgram
             Raylib.PlaySound(shootSound);
             enemyShotTime = Raylib.GetTime();
         }
+    }
+
+    public void EnemyShoot(List<Enemy> enemyList)
+    {
+        foreach (Enemy enemy in enemyList)
+        {
+            if (enemy.active && enemy.shooter && Raylib.GetTime() > enemy.lastShotTime + enemy.firerate)
+            {
+                Vector2 bulletPos = enemy.transform.position + enemy.collision.size;
+                bulletPos.X -= enemy.collision.size.X / 2;
+                enemyBullets.Add(new Bullet(bulletPos, new Vector2(12, 12), -200, bulletImage, true, new Rectangle(2, 42, 8, 11)));
+                Raylib.PlaySound(shootSound);
+                enemyShotTime = Raylib.GetTime();
+            }
+        }
+
+        /*for (int i = 0; i < enemyList.Count; i++)
+        {
+            if (enemyList[i].active && enemyShotTime > 5)
+            {
+                Vector2 bulletPos = new Vector2(0, 0);
+                enemyBullets.Add(new Bullet(bulletPos, new Vector2(12, 12), -200, bulletImage, true, new Rectangle(2, 42, 8, 11)));
+                Raylib.PlaySound(shootSound);
+            }
+        }*/
     }
 
     /// <summary>
