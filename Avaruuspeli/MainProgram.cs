@@ -154,7 +154,6 @@ class MainProgram
             timer = Raylib.GetTime();
             state = GameState.ScoreScreen;
         }
-
         // New round
         if (Raylib.IsKeyPressed(KeyboardKey.M))// || enemyList.Count <= 0)
         {
@@ -212,7 +211,7 @@ class MainProgram
     /// </summary>
     /// <param name="transform"></param>
     /// <param name="collision"></param>
-    public void Shoot(Transform transform, Collision collision)
+    void Shoot(Transform transform, Collision collision)
     {
         // Limit how fast can be shot again
         if (Raylib.GetTime() > shotTime + 0.5f)
@@ -225,7 +224,11 @@ class MainProgram
         }
     }
 
-    public void EnemyShoot(List<Enemy> enemyList)
+    /// <summary>
+    /// Shoots a bullet from enemy in enemyList
+    /// </summary>
+    /// <param name="enemyList">A list of enemies</param>
+    void EnemyShoot(List<Enemy> enemyList)
     {
         foreach (Enemy enemy in enemyList)
         {
@@ -247,7 +250,7 @@ class MainProgram
     /// <param name="enemyList"></param>
     /// <param name="screenHeight"></param>
     /// <param name="isPlayerShooting">Determines if we check does the bullet hit enemy or player</param>
-    public void HandleBullets(List<Bullet> bulletList, List<Enemy> enemyList, int screenHeight, bool isPlayerShooting)
+    void HandleBullets(List<Bullet> bulletList, List<Enemy> enemyList, int screenHeight, bool isPlayerShooting)
     {
         foreach (Bullet bullet in bulletList)
         {
@@ -293,7 +296,7 @@ class MainProgram
     /// <summary>
     /// Adds enemies to the level
     /// </summary>
-    public void AddEnemies()
+    void AddEnemies()
     {
         foreach (Vector2 spot in enemySpawnLocations)
         {
@@ -305,7 +308,7 @@ class MainProgram
     /// <summary>
     /// Restarts the game
     /// </summary>
-    public void RestartGame(bool isNewLevel)
+    void RestartGame(bool isNewLevel)
     {
         playerBullets = new List<Bullet>();
         enemyBullets = new List<Bullet>();
@@ -334,7 +337,7 @@ class MainProgram
     /// </summary>
     /// <param name="amount"></param>
     /// <param name="multiplier"></param>
-    public void IncreaseScore(int amount, int multiplier)
+    void IncreaseScore(int amount, int multiplier)
     {
         if (multiplier == 0) { multiplier = 1; }
         score += amount * multiplier;
@@ -343,7 +346,7 @@ class MainProgram
     /// <summary>
     /// Show player stats from the last run
     /// </summary>
-    public void ScoreScreen(bool win)
+    void ScoreScreen(bool win)
     {
         Raylib.BeginDrawing();
         Raylib.ClearBackground(Color.Black);

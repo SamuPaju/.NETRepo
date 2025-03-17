@@ -4,9 +4,6 @@
     {
         static void Main(string[] args)
         {
-            MainProgramT mainProgram = new MainProgramT();
-            //mainProgram.Start();
-
             MainProgram mainprogram2 = new MainProgram();
             mainprogram2.Start();
         }
