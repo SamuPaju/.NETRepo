@@ -21,10 +21,10 @@ class Enemy
     Vector2 levelSpeed;
 
     public double lastShotTime;
-    public float firerate = 1.5f;
+    public float fireRate = 1.5f;
 
     public Enemy(Rectangle frame, float speed, Texture2D sprite, bool rotate, 
-        Rectangle spriteSpot, Vector2 levelSpeed, bool mover, bool shooter, float firerate)
+        Rectangle spriteSpot, Vector2 levelSpeed, bool mover, bool shooter, float fireRate)
     {
         transform = new Transform(frame.Position, speed);
         collision = new Collision(frame.Size);
@@ -35,7 +35,7 @@ class Enemy
 
         this.mover = mover;
         this.shooter = shooter;
-        this.firerate = firerate;
+        this.fireRate = fireRate;
 
         if (mover) { transform.direction.X += 1; }
         transform.direction.Y += 1;

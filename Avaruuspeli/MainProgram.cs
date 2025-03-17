@@ -215,7 +215,7 @@ class MainProgram
     public void Shoot(Transform transform, Collision collision)
     {
         // Limit how fast can be shot again
-        if (Raylib.GetTime() > shotTime + 1)
+        if (Raylib.GetTime() > shotTime + 0.5f)
         {
             Vector2 objectPos = transform.position;
             objectPos.X += collision.size.X / 2;
@@ -229,7 +229,7 @@ class MainProgram
     {
         foreach (Enemy enemy in enemyList)
         {
-            if (enemy.active && enemy.shooter && Raylib.GetTime() > enemy.lastShotTime + enemy.firerate)
+            if (enemy.active && enemy.shooter && Raylib.GetTime() > enemy.lastShotTime + enemy.fireRate)
             {
                 Vector2 bulletPos = enemy.transform.position + enemy.collision.size;
                 bulletPos.X -= enemy.collision.size.X / 2;
@@ -265,7 +265,7 @@ class MainProgram
                 // Checks if a bullet hits an enemy
                 foreach (Enemy enemy in enemyList)
                 {
-                    if (Raylib.CheckCollisionRecs(bullet.spriterenderer.box, enemy.spriteRenderer.box))
+                    if (enemy.active && Raylib.CheckCollisionRecs(bullet.spriterenderer.box, enemy.spriteRenderer.box))
                     {
                         bulletList.Remove(bullet);
                         enemyList.Remove(enemy);
@@ -297,8 +297,8 @@ class MainProgram
     {
         foreach (Vector2 spot in enemySpawnLocations)
         {
-            enemyList.Add(new Enemy(new Rectangle(spot, 25, 25), 25, enemyImage, false,
-            new Rectangle(27, 202, 15, 21), new Vector2(0, forwardSpeed), true, true, 1.5f));
+            int type = new Random().Next(3);
+            enemyList.Add(SetEnemy(spot, type));
         }
     }
 
@@ -388,7 +388,41 @@ class MainProgram
     void SetPlayer()
     {
         player = new Player(new Vector2(screenWidth / 2, screenHeight * 0.85f),
-            new Vector2(30, 30), 100, playerImage, true, new Rectangle(26, 0, 24, 26),
+            new Vector2(30, 30), 150, playerImage, true, new Rectangle(26, 0, 24, 26),
             new Vector2(0, forwardSpeed));
+    }
+
+    /// <summary>
+    /// Creates different types of enemies
+    /// </summary>
+    /// <param name="spot">Where to place</param>
+    /// <param name="type">A number that gives the enemy type. Currently numbers go from 0 to 2</param>
+    /// <returns>Return a new enemy</returns>
+    Enemy SetEnemy(Vector2 spot, int type)
+    {
+        // Mover
+        if (type == 0)
+        {
+            return new Enemy(new Rectangle(spot, 30, 30), 25, enemyImage, false,
+            new Rectangle(27, 202, 15, 21), new Vector2(0, forwardSpeed), true, false, 0f);
+        } 
+        // Shooter
+        else if (type == 1)
+        {
+            return new Enemy(new Rectangle(spot, 25, 25), 25, enemyImage, false,
+            new Rectangle(27, 202, 15, 21), new Vector2(0, forwardSpeed), false, true, 2.5f);
+        }
+        // Advanced shooter
+        else if (type == 2)
+        {
+            return new Enemy(new Rectangle(spot, 20, 20), 25, enemyImage, false,
+            new Rectangle(27, 202, 15, 21), new Vector2(0, forwardSpeed), true, true, 1.5f);
+        }
+        // Debug tank
+        else
+        {
+            return new Enemy(new Rectangle(spot, 45, 45), 20, enemyImage, false,
+            new Rectangle(27, 202, 15, 21), new Vector2(0, forwardSpeed), false, false, 0f);
+        }
     }
 }

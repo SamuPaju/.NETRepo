@@ -16,7 +16,7 @@ namespace Avaruuspeli
 
         Vector2 velocity;
         Vector2 acceleration;
-        float maxSpeed = 100;
+        float maxSpeed = 120;
         Vector2 levelSpeed;
 
         public Player(Vector2 position, Vector2 size, float speed, Texture2D sprite, bool rotate, Rectangle spriteSpot, Vector2 levelSpeed)
