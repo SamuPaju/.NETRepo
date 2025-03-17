@@ -44,6 +44,7 @@ class MainProgram
         new Vector2(200, -500), new Vector2(600, -500),
         new Vector2(200, -600), new Vector2(300, -600)
     };
+    Boss boss1;
 
     // Sprites
     Texture2D playerImage;
@@ -100,6 +101,7 @@ class MainProgram
 
         // Enemy stuff        
         AddEnemies();
+        boss1 = new Boss(new Rectangle(275, 5, 250, 250), 10, playerImage, false, new Rectangle(4, 112, 137, 112), 15, 1f);
 
         while (Raylib.WindowShouldClose() == false)
         {
@@ -134,6 +136,8 @@ class MainProgram
     /// </summary>
     private void Update()
     {
+        boss1.transform.position.Y -= 25 * Raylib.GetFrameTime();
+
         player.Movement();
         player.KeepInsideScreen(screenWidth, screenHeight, cameraPos);
 
@@ -180,10 +184,6 @@ class MainProgram
 
         player.spriteRenderer.Draw();
 
-        // A rectangle to show where the EnemyFormations edges are
-        //Raylib.DrawRectangle((int)enemyFormation.transform.position.X, (int)enemyFormation.transform.position.Y, 
-        //    (int)enemyFormation.collision.size.X, (int)enemyFormation.collision.size.Y, Color.Green);
-
         foreach (Enemy enemy in enemyList)
         {
             Vector2 enemyScreenPos = Raylib.GetWorldToScreen2D(enemy.transform.position, camera);
@@ -196,6 +196,8 @@ class MainProgram
             }
             else { enemy.active = false; }
         }
+        
+        boss1.spriteRenderer.Draw();
 
         // Bullets are handled here because I have the bullets position changes and drawing
         // in the same method in bullet script
@@ -360,8 +362,8 @@ class MainProgram
         else
         {
             Vector2 gameoverTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Game Over", 70, 3);
-        Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Game Over", 
-            new Vector2(screenWidth / 2 - gameoverTextSize.X / 2, screenHeight / 6), 70, 3, Color.Red);
+            Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Game Over", 
+                new Vector2(screenWidth / 2 - gameoverTextSize.X / 2, screenHeight / 6), 70, 3, Color.Red);
         }
 
         Vector2 scoreTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Score: {score}", 50, 3);
@@ -380,7 +382,7 @@ class MainProgram
         Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Press any key to continue",
             new Vector2(screenWidth / 2 - guideTextSize.X / 2, screenHeight / 2 + 100), 50, 3, Color.White);
 
-        if (Raylib.GetKeyPressed() != 0) { RestartGame(false); }
+        if (Raylib.GetTime() > timer + 3 && Raylib.GetKeyPressed() != 0) { RestartGame(false); }
 
         Raylib.EndDrawing();
     }
