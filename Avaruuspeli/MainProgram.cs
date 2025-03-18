@@ -39,7 +39,7 @@ class MainProgram
     List<Vector2> enemySpawnLocations = new List<Vector2>()
     {
         // Boss location
-        new Vector2(275, -400),
+        new Vector2(275, -850),
 
         new Vector2(100, -200), new Vector2(300, -200),
         new Vector2(100, -100), new Vector2(200, -100),
@@ -147,6 +147,7 @@ class MainProgram
 
         player.Movement(new Vector2(0, forwardSpeed));
         player.KeepInsideScreen(screenWidth, screenHeight, cameraPos);
+        PlayerEnemyCollision(enemyList, boss);
 
         camera.Target = cameraPos;
         cameraPos.Y += forwardSpeed * Raylib.GetFrameTime();
@@ -333,7 +334,7 @@ class MainProgram
     }
 
     /// <summary>
-    /// Adds enemies to the level
+    /// Adds enemies and boss to the level
     /// </summary>
     void AddEnemies()
     {
@@ -471,6 +472,35 @@ class MainProgram
         {
             return new Enemy(new Rectangle(spot, 45, 45), 20, enemyImage, false,
             new Rectangle(27, 202, 15, 21), new Vector2(0, forwardSpeed), false, false, 0f);
+        }
+    }
+
+    /// <summary>
+    /// Makes player take damage if collides with an enemy
+    /// </summary>
+    /// <param name="enemyList"></param>
+    /// <param name="boss"></param>
+    void PlayerEnemyCollision(List<Enemy> enemyList, Boss boss)
+    {
+        foreach (Enemy enemy in enemyList)
+        {
+            if (Raylib.CheckCollisionRecs(player.spriteRenderer.box, enemy.spriteRenderer.box))
+            {
+                enemyList.Remove(enemy);
+                Raylib.PlaySound(explotionSound);
+                IncreaseScore(50, multiplier);
+                kills++;
+                player.health--;
+                return;
+            }
+        }
+
+        // Instantly kills player if player has less health than boss. Otherwise boss dies.
+        if (Raylib.CheckCollisionRecs(player.spriteRenderer.box, boss.spriteRenderer.box))
+        {
+            player.health--;
+            boss.health--;
+            Raylib.PlaySound(explotionSound);
         }
     }
 }
