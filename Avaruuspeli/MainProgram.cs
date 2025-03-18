@@ -47,7 +47,7 @@ class MainProgram
         new Vector2(200, -500), new Vector2(600, -500),
         new Vector2(200, -600), new Vector2(300, -600)
     };
-    Boss boss1;
+    Boss boss;
 
     // Sprites
     Texture2D playerImage;
@@ -104,7 +104,6 @@ class MainProgram
 
         // Enemy stuff        
         AddEnemies();
-        //boss1 = new Boss(new Rectangle(275, 5, 250, 250), 10, playerImage, false, new Rectangle(4, 112, 137, 112), 15, 1f);
 
         while (Raylib.WindowShouldClose() == false)
         {
@@ -139,18 +138,18 @@ class MainProgram
     /// </summary>
     private void Update()
     {
-        if (boss1.active)
+        if (boss.active)
         {
-            boss1.Movement();
-            BossShoot(boss1);
+            boss.Movement();
+            BossShoot(boss);
+            forwardSpeed = 0f;
         }
 
-        player.Movement();
+        player.Movement(new Vector2(0, forwardSpeed));
         player.KeepInsideScreen(screenWidth, screenHeight, cameraPos);
 
         camera.Target = cameraPos;
         cameraPos.Y += forwardSpeed * Raylib.GetFrameTime();
-        //Console.WriteLine(cameraPos);
 
         foreach (Enemy enemy in enemyList) { enemy.Update(); }
 
@@ -166,7 +165,7 @@ class MainProgram
             state = GameState.ScoreScreen;
         }
         // New round
-        if (Raylib.IsKeyPressed(KeyboardKey.M) || boss1.health <= 0)
+        if (Raylib.IsKeyPressed(KeyboardKey.M) || boss.health <= 0)
         {
             //RestartGame(true);
             roundTimer = Raylib.GetTime() - timer;
@@ -182,7 +181,7 @@ class MainProgram
     /// <summary>
     /// Draws the game
     /// </summary>
-    private void Draw()
+    void Draw()
     {
         Raylib.BeginDrawing();
         Raylib.ClearBackground(Color.Black);
@@ -191,12 +190,13 @@ class MainProgram
 
         player.spriteRenderer.Draw();
 
+        // Activate and draw all the enemies on the screen
         foreach (Enemy enemy in enemyList)
         {
             Vector2 enemyScreenPos = Raylib.GetWorldToScreen2D(enemy.transform.position, camera);
 
-            if (enemyScreenPos.Y + enemy.collision.size.Y > cameraPos.Y && enemyScreenPos.Y < screenHeight
-                && enemyScreenPos.X + enemy.collision.size.X > cameraPos.X && enemyScreenPos.X < screenWidth)
+            if (enemyScreenPos.Y + enemy.collision.size.Y > 0 && enemyScreenPos.Y < screenHeight
+                && enemyScreenPos.X + enemy.collision.size.X > 0 && enemyScreenPos.X < screenWidth)
             {
                 enemy.active = true;
                 enemy.spriteRenderer.Draw();
@@ -204,17 +204,15 @@ class MainProgram
             else { enemy.active = false; }
         }
 
-        Vector2 bossScreenPos = Raylib.GetWorldToScreen2D(boss1.transform.position, camera);
-        Vector2 cameraScreenPos = Raylib.GetWorldToScreen2D(cameraPos, camera);
-        if (bossScreenPos.Y + boss1.collision.size.Y > cameraPos.Y && bossScreenPos.Y < screenHeight)
-        {
-            boss1.spriteRenderer.Draw();
-        }
+        // Draw the boss when it's partially on the screen and activate it when it's fully on the screen 
+        Vector2 bossScreenPos = Raylib.GetWorldToScreen2D(boss.transform.position, camera);
+        if (bossScreenPos.Y + boss.collision.size.Y > 0 && bossScreenPos.Y < screenHeight) { boss.spriteRenderer.Draw(); }
+        if (bossScreenPos.Y > 0) { boss.active = true; }
 
         // Bullets are handled here because I have the bullets position changes and drawing
         // in the same method in bullet script
-        HandleBullets(playerBullets, enemyList, boss1, screenHeight, true);
-        HandleBullets(enemyBullets, enemyList, boss1, screenHeight, false);
+        HandleBullets(playerBullets, enemyList, boss, screenHeight, true);
+        HandleBullets(enemyBullets, enemyList, boss, screenHeight, false);
 
         Raylib.EndMode2D();
         Raylib.EndDrawing();
@@ -343,7 +341,7 @@ class MainProgram
         {
             if (spot == enemySpawnLocations[0])
             {
-                boss1 = new Boss(new Rectangle(spot, 250, 250), 20, playerImage, false, new Rectangle(4, 112, 137, 112), 15, 2.5f);
+                boss = new Boss(new Rectangle(spot, 250, 250), 20, playerImage, false, new Rectangle(4, 112, 137, 112), 15, 2.5f);
             }
             else
             {
@@ -439,8 +437,7 @@ class MainProgram
     void SetPlayer()
     {
         player = new Player(new Vector2(screenWidth / 2, screenHeight * 0.85f),
-            new Vector2(30, 30), 150, playerImage, true, new Rectangle(26, 0, 24, 26),
-            new Vector2(0, forwardSpeed));
+            new Vector2(30, 30), 150, playerImage, true, new Rectangle(26, 0, 24, 26));
     }
 
     /// <summary>

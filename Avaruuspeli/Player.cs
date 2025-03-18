@@ -1,7 +1,5 @@
 ﻿using Raylib_cs;
-using System.Data;
 using System.Numerics;
-using System.Threading.Tasks.Dataflow;
 
 namespace Avaruuspeli
 {
@@ -18,21 +16,20 @@ namespace Avaruuspeli
         Vector2 velocity;
         Vector2 acceleration;
         float maxSpeed = 120;
-        Vector2 levelSpeed;
 
-        public Player(Vector2 position, Vector2 size, float speed, Texture2D sprite, bool rotate, Rectangle spriteSpot, Vector2 levelSpeed)
+        public Player(Vector2 position, Vector2 size, float speed, Texture2D sprite, bool rotate, Rectangle spriteSpot)
         {
             transform = new Transform(position, speed);
             collision = new Collision(size);
             spriteRenderer = new SpriteRenderer(transform, collision, sprite, rotate, spriteSpot);
             health = 3;
-            this.levelSpeed = levelSpeed;
         }
 
         /// <summary>
         /// Takes movement input and moves the player
         /// </summary>
-        public void Movement()
+        /// <param name="levelSpeed">Speed of the level</param>
+        public void Movement(Vector2 levelSpeed)
         {
             float time = Raylib.GetFrameTime();
 
