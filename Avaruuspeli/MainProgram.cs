@@ -1,4 +1,5 @@
 ﻿using Raylib_cs;
+using System;
 using System.Numerics;
 
 namespace Avaruuspeli;
@@ -38,7 +39,7 @@ class MainProgram
     List<Vector2> enemySpawnLocations = new List<Vector2>()
     {
         // Boss location
-        new Vector2(275, 5),
+        new Vector2(275, -400),
 
         new Vector2(100, -200), new Vector2(300, -200),
         new Vector2(100, -100), new Vector2(200, -100),
@@ -138,9 +139,11 @@ class MainProgram
     /// </summary>
     private void Update()
     {
-        boss1.transform.position.Y -= 25 * Raylib.GetFrameTime();
-        boss1.Movement();
-        BossShoot(boss1);
+        if (boss1.active)
+        {
+            boss1.Movement();
+            BossShoot(boss1);
+        }
 
         player.Movement();
         player.KeepInsideScreen(screenWidth, screenHeight, cameraPos);
@@ -192,7 +195,7 @@ class MainProgram
         {
             Vector2 enemyScreenPos = Raylib.GetWorldToScreen2D(enemy.transform.position, camera);
 
-            if (enemyScreenPos.Y - enemy.collision.size.Y > cameraPos.Y && enemyScreenPos.Y < screenHeight
+            if (enemyScreenPos.Y + enemy.collision.size.Y > cameraPos.Y && enemyScreenPos.Y < screenHeight
                 && enemyScreenPos.X + enemy.collision.size.X > cameraPos.X && enemyScreenPos.X < screenWidth)
             {
                 enemy.active = true;
@@ -201,7 +204,12 @@ class MainProgram
             else { enemy.active = false; }
         }
 
-        if (boss1.active) { boss1.spriteRenderer.Draw(); }
+        Vector2 bossScreenPos = Raylib.GetWorldToScreen2D(boss1.transform.position, camera);
+        Vector2 cameraScreenPos = Raylib.GetWorldToScreen2D(cameraPos, camera);
+        if (bossScreenPos.Y + boss1.collision.size.Y > cameraPos.Y && bossScreenPos.Y < screenHeight)
+        {
+            boss1.spriteRenderer.Draw();
+        }
 
         // Bullets are handled here because I have the bullets position changes and drawing
         // in the same method in bullet script

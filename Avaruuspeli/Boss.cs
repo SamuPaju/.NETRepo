@@ -10,7 +10,7 @@ class Boss
     public Collision collision;
     public SpriteRenderer spriteRenderer;
 
-    public bool active = true;
+    public bool active;
 
     public int health;
     public double lastShotTime = 0;
@@ -27,6 +27,9 @@ class Boss
         this.fireRate = fireRate;
     }
 
+    /// <summary>
+    /// Moves boss from side to side
+    /// </summary>
     public void Movement()
     {
         transform.position.X += transform.speed * Raylib.GetFrameTime();
