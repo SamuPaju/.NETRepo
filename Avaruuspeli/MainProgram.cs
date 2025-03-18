@@ -1,5 +1,4 @@
 ﻿using Raylib_cs;
-using System;
 using System.Numerics;
 
 namespace Avaruuspeli;
@@ -140,6 +139,8 @@ class MainProgram
     private void Update()
     {
         boss1.transform.position.Y -= 25 * Raylib.GetFrameTime();
+        boss1.Movement();
+        BossShoot(boss1);
 
         player.Movement();
         player.KeepInsideScreen(screenWidth, screenHeight, cameraPos);
@@ -248,6 +249,21 @@ class MainProgram
         }
     }
 
+    void BossShoot(Boss boss)
+    {
+        if (boss.active && Raylib.GetTime() > boss.lastShotTime + boss.fireRate)
+        {
+            Vector2 bulletPos = boss.transform.position + boss.collision.size;
+            bulletPos.X -= boss.collision.size.X / 2;
+            enemyBullets.Add(new Bullet(new Vector2(bulletPos.X - 45, bulletPos.Y), 
+                new Vector2(20, 20), -180, bulletImage, true, new Rectangle(2, 42, 8, 11)));
+            enemyBullets.Add(new Bullet(new Vector2(bulletPos.X + 25, bulletPos.Y), 
+                new Vector2(20, 20), -180, bulletImage, true, new Rectangle(2, 42, 8, 11)));
+            Raylib.PlaySound(shootSound);
+            boss.lastShotTime = Raylib.GetTime();
+        }
+    }
+
     /// <summary>
     /// Takes care of bullet in a given list
     /// </summary>
@@ -259,15 +275,17 @@ class MainProgram
     {
         foreach (Bullet bullet in bulletList)
         {
+            // Drawing and moving
             bullet.Handler();
 
-            // Removes bullets that go out of window
+            // Remove bullets that go out of window
             if (bullet.transfrom.position.Y <= (cameraPos.Y - 10) || bullet.transfrom.position.Y >= (screenHeight + cameraPos.Y + 10))
             {
                 bulletList.Remove(bullet);
                 return;
             }
 
+            // Player bullets
             if (isPlayerShooting == true)
             {
                 // Checks if a bullet hits an enemy
@@ -293,6 +311,7 @@ class MainProgram
                     return;
                 }
             }
+            // Enemy bullets
             else
             {
                 // Checks if the bullet hits the player
@@ -316,7 +335,7 @@ class MainProgram
         {
             if (spot == enemySpawnLocations[0])
             {
-                boss1 = new Boss(new Rectangle(spot, 250, 250), 10, playerImage, false, new Rectangle(4, 112, 137, 112), 15, 1f);
+                boss1 = new Boss(new Rectangle(spot, 250, 250), 20, playerImage, false, new Rectangle(4, 112, 137, 112), 15, 2.5f);
             }
             else
             {
