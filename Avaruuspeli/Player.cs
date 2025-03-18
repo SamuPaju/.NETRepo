@@ -1,6 +1,7 @@
 ﻿using Raylib_cs;
 using System.Data;
 using System.Numerics;
+using System.Threading.Tasks.Dataflow;
 
 namespace Avaruuspeli
 {
@@ -64,9 +65,11 @@ namespace Avaruuspeli
                 transform.direction.Y += 1;
             }
             // Slow movement if none of the keys are pressed
-            if (transform.direction == new Vector2(0, 0)) { velocity *= 0.9996f; }
+            //if (transform.direction == new Vector2(0, 0)) { velocity *= 0.9996f; }
+            if (transform.direction.X == 0) { velocity.X *= 0.9996f; }
+            if (transform.direction.Y == 0) { velocity.Y *= 0.9996f; }
 
-            acceleration = transform.direction * transform.speed + levelSpeed;//new Vector2(0, -25);
+            acceleration = transform.direction * transform.speed + levelSpeed;
             velocity += acceleration * time;
 
             // Check that the velocity doesn't go way too high or low
@@ -74,8 +77,6 @@ namespace Avaruuspeli
             if (velocity.X > maxSpeed) { velocity.X = maxSpeed; }
             if (velocity.Y < -maxSpeed) { velocity.Y = -maxSpeed; }
             if (velocity.Y > maxSpeed) { velocity.Y = maxSpeed; }
-
-            //Console.WriteLine(transform.position);
 
             transform.position += velocity * time;
         }

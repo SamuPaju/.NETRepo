@@ -9,7 +9,7 @@ class Boss
     public Collision collision;
     public SpriteRenderer spriteRenderer;
 
-    public bool active;
+    public bool active = true;
 
     public int health;
     public float fireRate;

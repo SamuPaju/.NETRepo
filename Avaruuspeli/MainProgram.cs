@@ -1,4 +1,5 @@
 ﻿using Raylib_cs;
+using System;
 using System.Numerics;
 
 namespace Avaruuspeli;
@@ -37,7 +38,9 @@ class MainProgram
     List<Bullet> enemyBullets = new List<Bullet>();
     List<Vector2> enemySpawnLocations = new List<Vector2>()
     {
-        new Vector2(100, -100),
+        // Boss location
+        new Vector2(275, 5),
+
         new Vector2(100, -200), new Vector2(300, -200),
         new Vector2(100, -100), new Vector2(200, -100),
         new Vector2(300, -300), new Vector2(100, -300),
@@ -101,7 +104,7 @@ class MainProgram
 
         // Enemy stuff        
         AddEnemies();
-        boss1 = new Boss(new Rectangle(275, 5, 250, 250), 10, playerImage, false, new Rectangle(4, 112, 137, 112), 15, 1f);
+        //boss1 = new Boss(new Rectangle(275, 5, 250, 250), 10, playerImage, false, new Rectangle(4, 112, 137, 112), 15, 1f);
 
         while (Raylib.WindowShouldClose() == false)
         {
@@ -159,7 +162,7 @@ class MainProgram
             state = GameState.ScoreScreen;
         }
         // New round
-        if (Raylib.IsKeyPressed(KeyboardKey.M))// || enemyList.Count <= 0)
+        if (Raylib.IsKeyPressed(KeyboardKey.M) || boss1.health <= 0)
         {
             //RestartGame(true);
             roundTimer = Raylib.GetTime() - timer;
@@ -196,13 +199,13 @@ class MainProgram
             }
             else { enemy.active = false; }
         }
-        
-        boss1.spriteRenderer.Draw();
+
+        if (boss1.active) { boss1.spriteRenderer.Draw(); }
 
         // Bullets are handled here because I have the bullets position changes and drawing
         // in the same method in bullet script
-        HandleBullets(playerBullets, enemyList, screenHeight, true);
-        HandleBullets(enemyBullets, enemyList, screenHeight, false);
+        HandleBullets(playerBullets, enemyList, boss1, screenHeight, true);
+        HandleBullets(enemyBullets, enemyList, boss1, screenHeight, false);
 
         Raylib.EndMode2D();
         Raylib.EndDrawing();
@@ -252,7 +255,7 @@ class MainProgram
     /// <param name="enemyList"></param>
     /// <param name="screenHeight"></param>
     /// <param name="isPlayerShooting">Determines if we check does the bullet hit enemy or player</param>
-    void HandleBullets(List<Bullet> bulletList, List<Enemy> enemyList, int screenHeight, bool isPlayerShooting)
+    void HandleBullets(List<Bullet> bulletList, List<Enemy> enemyList, Boss boss, int screenHeight, bool isPlayerShooting)
     {
         foreach (Bullet bullet in bulletList)
         {
@@ -280,6 +283,15 @@ class MainProgram
                         return;
                     }
                 }
+
+                if (boss.active && Raylib.CheckCollisionRecs(bullet.spriterenderer.box, boss.spriteRenderer.box))
+                {
+                    bulletList.Remove(bullet);
+                    boss.health--;
+                    if (boss.health <= 0) { boss.active = false; }
+                    Raylib.PlaySound(explotionSound);
+                    return;
+                }
             }
             else
             {
@@ -302,8 +314,15 @@ class MainProgram
     {
         foreach (Vector2 spot in enemySpawnLocations)
         {
-            int type = new Random().Next(3);
-            enemyList.Add(SetEnemy(spot, type));
+            if (spot == enemySpawnLocations[0])
+            {
+                boss1 = new Boss(new Rectangle(spot, 250, 250), 10, playerImage, false, new Rectangle(4, 112, 137, 112), 15, 1f);
+            }
+            else
+            {
+                int type = new Random().Next(3);
+                enemyList.Add(SetEnemy(spot, type));
+            }
         }
     }
 
@@ -382,7 +401,7 @@ class MainProgram
         Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Press any key to continue",
             new Vector2(screenWidth / 2 - guideTextSize.X / 2, screenHeight / 2 + 100), 50, 3, Color.White);
 
-        if (Raylib.GetTime() > timer + 3 && Raylib.GetKeyPressed() != 0) { RestartGame(false); }
+        if (Raylib.GetTime() > timer + 1.5f && Raylib.GetKeyPressed() != 0) { RestartGame(false); }
 
         Raylib.EndDrawing();
     }
