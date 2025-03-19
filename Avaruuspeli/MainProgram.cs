@@ -156,7 +156,7 @@ class MainProgram
     /// </summary>
     private void Update()
     {
-        player.Movement(new Vector2(0, forwardSpeed));
+        //player.Movement(new Vector2(0, forwardSpeed));
         player.KeepInsideScreen(screenWidth, screenHeight, cameraPos);
         PlayerEnemyCollision(enemyList, boss);
 
@@ -206,7 +206,8 @@ class MainProgram
 
         Raylib.BeginMode2D(camera);
 
-        player.spriteRenderer.Draw();
+        //player.spriteRenderer.Draw();
+        player.Movement(new Vector2(0, forwardSpeed));
 
         // Activate and draw all the enemies on the screen
         foreach (Enemy enemy in enemyList)

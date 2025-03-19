@@ -17,6 +17,10 @@ namespace Avaruuspeli
         Vector2 acceleration;
         float maxSpeed = 120;
 
+        Rectangle movingLeftImage = new Rectangle(52, 0, 20, 26);
+        Rectangle movingRightImage = new Rectangle(2, 0, 24, 26);
+        Rectangle movingForwardImage = new Rectangle(26, 0, 24, 26);
+
         public Player(Vector2 position, Vector2 size, float speed, Texture2D sprite, bool rotate, Rectangle spriteSpot)
         {
             transform = new Transform(position, speed);
@@ -33,39 +37,20 @@ namespace Avaruuspeli
         {
             float time = Raylib.GetFrameTime();
 
-            // Easy movement
-            //if (Raylib.IsKeyDown(KeyboardKey.Left) || Raylib.IsKeyDown(KeyboardKey.A))
-            //{
-            //    transform.position.X -= transform.speed * Raylib.GetFrameTime();
-            //}
-            //if (Raylib.IsKeyDown(KeyboardKey.Right) || Raylib.IsKeyDown(KeyboardKey.D))
-            //{
-            //    transform.position.X += transform.speed * Raylib.GetFrameTime();
-            //}
-
             // Acceleration movement
             transform.direction = new Vector2(0, 0);
-            if (Raylib.IsKeyDown(KeyboardKey.Left) || Raylib.IsKeyDown(KeyboardKey.A))
-            {
-                transform.direction.X -= 1;
-            }
-            if (Raylib.IsKeyDown(KeyboardKey.Right) || Raylib.IsKeyDown(KeyboardKey.D))
-            {
-                transform.direction.X += 1;
-            }
-            if (Raylib.IsKeyDown(KeyboardKey.Up) || Raylib.IsKeyDown(KeyboardKey.W))
-            {
-                transform.direction.Y -= 1;
-            }
-            if (Raylib.IsKeyDown(KeyboardKey.Down) || Raylib.IsKeyDown(KeyboardKey.S))
-            {
-                transform.direction.Y += 1;
-            }
+
+            // Change direction when a key is pressed
+            if (Raylib.IsKeyDown(KeyboardKey.Left) || Raylib.IsKeyDown(KeyboardKey.A)) { transform.direction.X -= 1; }
+            if (Raylib.IsKeyDown(KeyboardKey.Right) || Raylib.IsKeyDown(KeyboardKey.D)) { transform.direction.X += 1; }
+            if (Raylib.IsKeyDown(KeyboardKey.Up) || Raylib.IsKeyDown(KeyboardKey.W)) { transform.direction.Y -= 1; }
+            if (Raylib.IsKeyDown(KeyboardKey.Down) || Raylib.IsKeyDown(KeyboardKey.S)) { transform.direction.Y += 1; }
+
             // Slow movement if none of the keys are pressed
-            //if (transform.direction == new Vector2(0, 0)) { velocity *= 0.9996f; }
             if (transform.direction.X == 0) { velocity.X *= 0.9996f; }
             if (transform.direction.Y == 0) { velocity.Y *= 0.9996f; }
 
+            // Calculate velocity
             acceleration = transform.direction * transform.speed + levelSpeed;
             velocity += acceleration * time;
 
@@ -75,6 +60,12 @@ namespace Avaruuspeli
             if (velocity.Y < -maxSpeed) { velocity.Y = -maxSpeed; }
             if (velocity.Y > maxSpeed) { velocity.Y = maxSpeed; }
 
+            // Animate movement based on velocity amount
+            if (velocity.X <= -20) { spriteRenderer.DrawAnimated(movingLeftImage); }
+            else if (velocity.X >= 20) { spriteRenderer.DrawAnimated(movingRightImage); }
+            else { spriteRenderer.DrawAnimated(movingForwardImage); }
+
+            // Apply velocity to position
             transform.position += velocity * time;
         }
 
