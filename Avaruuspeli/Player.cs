@@ -12,6 +12,8 @@ namespace Avaruuspeli
         public Collision collision;
         public SpriteRenderer spriteRenderer;
         public int health;
+        public bool alive = true;
+        public int playerNumber;
 
         Vector2 velocity;
         Vector2 acceleration;
@@ -21,12 +23,13 @@ namespace Avaruuspeli
         Rectangle movingRightImage = new Rectangle(2, 0, 24, 26);
         Rectangle movingForwardImage = new Rectangle(26, 0, 24, 26);
 
-        public Player(Vector2 position, Vector2 size, float speed, Texture2D sprite, bool rotate, Rectangle spriteSpot)
+        public Player(Vector2 position, Vector2 size, float speed, Texture2D sprite, bool rotate, Rectangle spriteSpot, int playerNumber)
         {
             transform = new Transform(position, speed);
             collision = new Collision(size);
             spriteRenderer = new SpriteRenderer(transform, collision, sprite, rotate, spriteSpot);
             health = 3;
+            this.playerNumber = playerNumber;
         }
 
         /// <summary>
@@ -35,16 +38,29 @@ namespace Avaruuspeli
         /// <param name="levelSpeed">Speed of the level</param>
         public void Movement(Vector2 levelSpeed)
         {
+            // Check if player is alive
+            if (health <= 0) { alive = false;  return; }
+
             float time = Raylib.GetFrameTime();
 
             // Acceleration movement
             transform.direction = new Vector2(0, 0);
 
             // Change direction when a key is pressed
-            if (Raylib.IsKeyDown(KeyboardKey.Left) || Raylib.IsKeyDown(KeyboardKey.A)) { transform.direction.X -= 1; }
-            if (Raylib.IsKeyDown(KeyboardKey.Right) || Raylib.IsKeyDown(KeyboardKey.D)) { transform.direction.X += 1; }
-            if (Raylib.IsKeyDown(KeyboardKey.Up) || Raylib.IsKeyDown(KeyboardKey.W)) { transform.direction.Y -= 1; }
-            if (Raylib.IsKeyDown(KeyboardKey.Down) || Raylib.IsKeyDown(KeyboardKey.S)) { transform.direction.Y += 1; }
+            if (playerNumber == 1)
+            {
+                if (Raylib.IsKeyDown(KeyboardKey.A)) { transform.direction.X -= 1; }
+                if (Raylib.IsKeyDown(KeyboardKey.D)) { transform.direction.X += 1; }
+                if (Raylib.IsKeyDown(KeyboardKey.W)) { transform.direction.Y -= 1; }
+                if (Raylib.IsKeyDown(KeyboardKey.S)) { transform.direction.Y += 1; }
+            }
+            else if (playerNumber == 2)
+            {
+                if (Raylib.IsKeyDown(KeyboardKey.Left)) { transform.direction.X -= 1; }
+                if (Raylib.IsKeyDown(KeyboardKey.Right)) { transform.direction.X += 1; }
+                if (Raylib.IsKeyDown(KeyboardKey.Up)) { transform.direction.Y -= 1; }
+                if (Raylib.IsKeyDown(KeyboardKey.Down)) { transform.direction.Y += 1; }
+            }
 
             // Slow movement if none of the keys are pressed
             if (transform.direction.X == 0) { velocity.X *= 0.9996f; }

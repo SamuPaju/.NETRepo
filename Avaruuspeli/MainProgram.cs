@@ -18,6 +18,8 @@ class MainProgram
 
     // Player
     Player player;
+    Player player2;
+    bool twoPlayer = true;
     double shotTime = -1;
     List<Bullet> playerBullets = new List<Bullet>();
 
@@ -158,7 +160,12 @@ class MainProgram
     {
         //player.Movement(new Vector2(0, forwardSpeed));
         player.KeepInsideScreen(screenWidth, screenHeight, cameraPos);
-        PlayerEnemyCollision(enemyList, boss);
+        PlayerEnemyCollision(player, enemyList, boss);
+        if (twoPlayer)
+        {
+            player2.KeepInsideScreen(screenWidth, screenHeight, cameraPos);
+            PlayerEnemyCollision(player2, enemyList, boss);
+        }
 
         camera.Target = cameraPos;
         cameraPos.Y += forwardSpeed * Raylib.GetFrameTime();
@@ -173,18 +180,33 @@ class MainProgram
         }
 
         // Shoot
-        if (Raylib.IsKeyPressed(KeyboardKey.Space)) { Shoot(player.transform, player.collision); }
+        if (Raylib.IsKeyPressed(KeyboardKey.Space) && player.alive) { Shoot(player.transform, player.collision); }
+        if (twoPlayer && Raylib.IsKeyPressed(KeyboardKey.M) && player2.alive) { Shoot(player2.transform, player2.collision); }
         EnemyShoot(enemyList);
 
         // Game over
-        if (Raylib.IsKeyPressed(KeyboardKey.P) || player.health <= 0)
+        if (twoPlayer)
         {
-            roundTimer = Raylib.GetTime() - timer;
-            timer = Raylib.GetTime();
-            state = GameState.ScoreScreen;
+            if (Raylib.IsKeyPressed(KeyboardKey.P) || !player.alive && !player2.alive)
+            {
+                roundTimer = Raylib.GetTime() - timer;
+                timer = Raylib.GetTime();
+                win = false;
+                state = GameState.ScoreScreen;
+            }
+        }
+        else
+        {
+            if (Raylib.IsKeyPressed(KeyboardKey.P) || !player.alive)
+            {
+                roundTimer = Raylib.GetTime() - timer;
+                timer = Raylib.GetTime();
+                win = false;
+                state = GameState.ScoreScreen;
+            }
         }
         // New round
-        if (Raylib.IsKeyPressed(KeyboardKey.M) || boss.health <= 0)
+        if (Raylib.IsKeyPressed(KeyboardKey.N) || boss.health <= 0)
         {
             roundTimer = Raylib.GetTime() - timer;
             timer = Raylib.GetTime();
@@ -205,9 +227,9 @@ class MainProgram
         Raylib.ClearBackground(Color.Black);
 
         Raylib.BeginMode2D(camera);
-
-        //player.spriteRenderer.Draw();
-        player.Movement(new Vector2(0, forwardSpeed));
+;
+        player.Movement(new Vector2(0, forwardSpeed));       
+        if (twoPlayer) { player2.Movement(new Vector2(0, forwardSpeed)); }
 
         // Activate and draw all the enemies on the screen
         foreach (Enemy enemy in enemyList)
@@ -340,11 +362,18 @@ class MainProgram
             else
             {
                 // Checks if the bullet hits the player
-                if (Raylib.CheckCollisionRecs(bullet.spriterenderer.box, player.spriteRenderer.box))
+                if (player.alive && Raylib.CheckCollisionRecs(bullet.spriterenderer.box, player.spriteRenderer.box))
                 {
                     bulletList.Remove(bullet);
                     Raylib.PlaySound(explotionSound);
                     player.health--;
+                    return;
+                }
+                if (twoPlayer && player2.alive && Raylib.CheckCollisionRecs(bullet.spriterenderer.box, player2.spriteRenderer.box))
+                {
+                    bulletList.Remove(bullet);
+                    Raylib.PlaySound(explotionSound);
+                    player2.health--;
                     return;
                 }
             }
@@ -375,6 +404,7 @@ class MainProgram
     /// </summary>
     void RestartGame(bool isNewLevel)
     {
+        // Reset all the lists and gamestate
         playerBullets = new List<Bullet>();
         enemyBullets = new List<Bullet>();
         enemyList = new List<Enemy>();
@@ -382,6 +412,7 @@ class MainProgram
 
         SetPlayer();
 
+        // Set camera at the start
         cameraPos = new Vector2(0, 0);
 
         // If new level starts don't reset stats
@@ -400,8 +431,6 @@ class MainProgram
         }
 
         AddEnemies(levelArray[levelIndex]);
-
-        win = false;
     }
 
     /// <summary>
@@ -411,7 +440,9 @@ class MainProgram
     /// <param name="multiplier"></param>
     void IncreaseScore(int amount, int multiplier)
     {
+        // If multiplier is 0 set it to 1
         if (multiplier == 0) { multiplier = 1; }
+        // Apply score
         score += amount * multiplier;
     }
 
@@ -423,12 +454,14 @@ class MainProgram
         Raylib.BeginDrawing();
         Raylib.ClearBackground(Color.Black);
 
+        // Win text
         if (win)
         {
             Vector2 gameoverTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Victory", 70, 3);
             Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Victory",
                 new Vector2(screenWidth / 2 - gameoverTextSize.X / 2, screenHeight / 6), 70, 3, Color.Blue);
         }
+        // Game over text
         else
         {
             Vector2 gameoverTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Game Over", 70, 3);
@@ -452,6 +485,7 @@ class MainProgram
         Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Press any key to continue",
             new Vector2(screenWidth / 2 - guideTextSize.X / 2, screenHeight / 2 + 100), 50, 3, Color.White);
 
+        // Waits a little while until lets player go forward
         if (Raylib.GetTime() > timer + 1.5f && Raylib.GetKeyPressed() != 0) { RestartGame(win); }
 
         Raylib.EndDrawing();
@@ -461,9 +495,21 @@ class MainProgram
     /// Easy way to set player
     /// </summary>
     void SetPlayer()
-    {
-        player = new Player(new Vector2(screenWidth / 2, screenHeight * 0.85f),
-            new Vector2(30, 30), 150, playerImage, true, new Rectangle(26, 0, 24, 26));
+    {      
+        if (twoPlayer) 
+        {
+            // Set both players
+            player = new Player(new Vector2(screenWidth / 2 - 80, screenHeight * 0.85f),
+                new Vector2(30, 30), 150, playerImage, true, new Rectangle(26, 0, 24, 26), 1);
+            player2 = new Player(new Vector2(screenWidth / 2 + 80, screenHeight * 0.85f),
+                new Vector2(30, 30), 150, playerImage, true, new Rectangle(26, 0, 24, 26), 2);
+        }
+        else
+        {
+            // Set only one player
+            player = new Player(new Vector2(screenWidth / 2, screenHeight * 0.85f),
+                new Vector2(30, 30), 150, playerImage, true, new Rectangle(26, 0, 24, 26), 1);
+        }
     }
 
     /// <summary>
@@ -505,8 +551,12 @@ class MainProgram
     /// </summary>
     /// <param name="enemyList"></param>
     /// <param name="boss"></param>
-    void PlayerEnemyCollision(List<Enemy> enemyList, Boss boss)
+    void PlayerEnemyCollision(Player player, List<Enemy> enemyList, Boss boss)
     {
+        // Check if player is alive
+        if (!player.alive) { return; }
+
+        // Goes through all the enemies and check if they collide with a player
         foreach (Enemy enemy in enemyList)
         {
             if (Raylib.CheckCollisionRecs(player.spriteRenderer.box, enemy.spriteRenderer.box))
