@@ -30,20 +30,10 @@ public class SpriteRenderer
 	public void Draw()
 	{
 		box = new Rectangle((int)transform.position.X, (int)transform.position.Y, collision.size.X, collision.size.Y);
-        //Raylib.DrawRectangleRec(box, color);
-
-		// Hole picture
-		//Raylib.DrawTextureV(sprite, transform.position, Color.White);
 
 		// Part of a picture
-		//Rectangle sourceRec = new Rectangle(new Vector2(100, 57), new Vector2(20, 25));
-		//Raylib.DrawTextureRec(sprite, sourceRec, transform.position, Color.White);
-
 		// If rotate is true we will turn the image and set the origin to the down right corner
-		if (rotate)
-		{
-            Raylib.DrawTexturePro(sprite, spriteSpot, box, new Vector2(box.Width, box.Height), 180, Color.White);
-        }
+		if (rotate) { Raylib.DrawTexturePro(sprite, spriteSpot, box, new Vector2(box.Width, box.Height), 180, Color.White); }
 		// Else we will draw the image normally
 		else { Raylib.DrawTexturePro(sprite, spriteSpot, box, new Vector2(0, 0), 0, Color.White); }       
     }
