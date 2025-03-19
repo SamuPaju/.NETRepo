@@ -36,7 +36,10 @@ class MainProgram
     // Enemy Tyrian
     List<Enemy> enemyList = new List<Enemy>();
     List<Bullet> enemyBullets = new List<Bullet>();
-    List<Vector2> enemySpawnLocations = new List<Vector2>()
+    Boss boss;
+
+    // Level
+    List<Vector2> level1SpawnLocations = new List<Vector2>()
     {
         // Boss location
         new Vector2(275, -850),
@@ -47,7 +50,19 @@ class MainProgram
         new Vector2(200, -500), new Vector2(600, -500),
         new Vector2(200, -600), new Vector2(300, -600)
     };
-    Boss boss;
+    List<Vector2> level2SpawnLocations = new List<Vector2>()
+    {
+        // Boss location
+        new Vector2(275, -750),
+
+        new Vector2(50, -100), new Vector2(100, -100),
+        new Vector2(150, -100), new Vector2(200, -100),
+        new Vector2(700, -250), new Vector2(100, -300),
+        new Vector2(200, -400), new Vector2(600, -400),
+        new Vector2(200, -500), new Vector2(300, -500)
+    };
+    List<Vector2>[] levelArray;
+    int levelIndex = 0;
 
     // Sprites
     Texture2D playerImage;
@@ -102,8 +117,11 @@ class MainProgram
         camera.Rotation = 0f;
         camera.Zoom = 1f;
 
+        // Level stuff
+        levelArray = new List<Vector2>[] { level1SpawnLocations, level2SpawnLocations };
+
         // Enemy stuff        
-        AddEnemies();
+        AddEnemies(levelArray[levelIndex]);
 
         while (Raylib.WindowShouldClose() == false)
         {
@@ -138,13 +156,6 @@ class MainProgram
     /// </summary>
     private void Update()
     {
-        if (boss.active)
-        {
-            boss.Movement();
-            BossShoot(boss);
-            forwardSpeed = 0f;
-        }
-
         player.Movement(new Vector2(0, forwardSpeed));
         player.KeepInsideScreen(screenWidth, screenHeight, cameraPos);
         PlayerEnemyCollision(enemyList, boss);
@@ -154,12 +165,19 @@ class MainProgram
 
         foreach (Enemy enemy in enemyList) { enemy.Update(); }
 
+        if (boss.active)
+        {
+            boss.Movement();
+            BossShoot(boss);
+            forwardSpeed = 0f;
+        }
+
         // Shoot
         if (Raylib.IsKeyPressed(KeyboardKey.Space)) { Shoot(player.transform, player.collision); }
         EnemyShoot(enemyList);
 
         // Game over
-        if (Raylib.IsKeyPressed(KeyboardKey.Escape) || player.health <= 0)
+        if (Raylib.IsKeyPressed(KeyboardKey.P) || player.health <= 0)
         {
             roundTimer = Raylib.GetTime() - timer;
             timer = Raylib.GetTime();
@@ -168,7 +186,6 @@ class MainProgram
         // New round
         if (Raylib.IsKeyPressed(KeyboardKey.M) || boss.health <= 0)
         {
-            //RestartGame(true);
             roundTimer = Raylib.GetTime() - timer;
             timer = Raylib.GetTime();
             win = true;
@@ -336,11 +353,11 @@ class MainProgram
     /// <summary>
     /// Adds enemies and boss to the level
     /// </summary>
-    void AddEnemies()
+    void AddEnemies(List<Vector2> levelSpawnLocations)
     {
-        foreach (Vector2 spot in enemySpawnLocations)
+        foreach (Vector2 spot in levelSpawnLocations)
         {
-            if (spot == enemySpawnLocations[0])
+            if (spot == levelSpawnLocations[0])
             {
                 boss = new Boss(new Rectangle(spot, 250, 250), 20, playerImage, false, new Rectangle(4, 112, 137, 112), 15, 2.5f);
             }
@@ -372,11 +389,18 @@ class MainProgram
             score = 0;
             multiplier = 1;
             kills = 0;
+            levelIndex = 0;
+        }
+        // Set next level
+        else 
+        { 
+            levelIndex++; 
+            if (levelIndex >= levelArray.Length) { levelIndex = 0; }
         }
 
-        win = false;
+        AddEnemies(levelArray[levelIndex]);
 
-        AddEnemies();
+        win = false;
     }
 
     /// <summary>
@@ -427,7 +451,7 @@ class MainProgram
         Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Press any key to continue",
             new Vector2(screenWidth / 2 - guideTextSize.X / 2, screenHeight / 2 + 100), 50, 3, Color.White);
 
-        if (Raylib.GetTime() > timer + 1.5f && Raylib.GetKeyPressed() != 0) { RestartGame(false); }
+        if (Raylib.GetTime() > timer + 1.5f && Raylib.GetKeyPressed() != 0) { RestartGame(win); }
 
         Raylib.EndDrawing();
     }

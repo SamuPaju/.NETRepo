@@ -23,6 +23,8 @@ class Boss
         collision = new Collision(frame.Size);
         spriteRenderer = new SpriteRenderer(transform, collision, sprite, rotate, spriteSpot);
 
+        active = false;
+
         this.health = health;
         this.fireRate = fireRate;
     }
