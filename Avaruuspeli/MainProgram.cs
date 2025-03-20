@@ -1,5 +1,4 @@
 ﻿using Raylib_cs;
-using System;
 using System.Numerics;
 
 namespace Avaruuspeli;
@@ -125,6 +124,7 @@ class MainProgram
         // Enemy stuff        
         AddEnemies(levelArray[levelIndex]);
 
+        // Game running and state selection
         while (Raylib.WindowShouldClose() == false)
         {
             switch (state)
@@ -158,20 +158,25 @@ class MainProgram
     /// </summary>
     private void Update()
     {
-        //player.Movement(new Vector2(0, forwardSpeed));
+        // Keep players in the screen and check if they collide with enemies
+        // First player
         player.KeepInsideScreen(screenWidth, screenHeight, cameraPos);
         PlayerEnemyCollision(player, enemyList, boss);
+        // Second player
         if (twoPlayer)
         {
             player2.KeepInsideScreen(screenWidth, screenHeight, cameraPos);
             PlayerEnemyCollision(player2, enemyList, boss);
         }
 
+        // Set camera position
         camera.Target = cameraPos;
         cameraPos.Y += forwardSpeed * Raylib.GetFrameTime();
 
+        // Update enemies
         foreach (Enemy enemy in enemyList) { enemy.Update(); }
 
+        // Boss fight state
         if (boss.active)
         {
             boss.Movement();
@@ -180,27 +185,35 @@ class MainProgram
         }
 
         // Shoot
+        // First player
         if (Raylib.IsKeyPressed(KeyboardKey.Space) && player.alive) { Shoot(player.transform, player.collision); }
+        // Second player
         if (twoPlayer && Raylib.IsKeyPressed(KeyboardKey.M) && player2.alive) { Shoot(player2.transform, player2.collision); }
         EnemyShoot(enemyList);
 
         // Game over
+        // Two players
         if (twoPlayer)
         {
             if (Raylib.IsKeyPressed(KeyboardKey.P) || !player.alive && !player2.alive)
             {
+                // Get round time
                 roundTimer = Raylib.GetTime() - timer;
                 timer = Raylib.GetTime();
+                // Set win and gamestate
                 win = false;
                 state = GameState.ScoreScreen;
             }
         }
+        // Single player
         else
         {
             if (Raylib.IsKeyPressed(KeyboardKey.P) || !player.alive)
             {
+                // Get round time
                 roundTimer = Raylib.GetTime() - timer;
                 timer = Raylib.GetTime();
+                // Set win and gamestate
                 win = false;
                 state = GameState.ScoreScreen;
             }
@@ -208,8 +221,10 @@ class MainProgram
         // New round
         if (Raylib.IsKeyPressed(KeyboardKey.N) || boss.health <= 0)
         {
+            // Get round time
             roundTimer = Raylib.GetTime() - timer;
             timer = Raylib.GetTime();
+            // Set win and gamestate
             win = true;
             state = GameState.ScoreScreen;
         }
@@ -227,21 +242,26 @@ class MainProgram
         Raylib.ClearBackground(Color.Black);
 
         Raylib.BeginMode2D(camera);
-;
+        
+        // Moving players are here because their animations are drawn in there
         player.Movement(new Vector2(0, forwardSpeed));       
         if (twoPlayer) { player2.Movement(new Vector2(0, forwardSpeed)); }
 
         // Activate and draw all the enemies on the screen
         foreach (Enemy enemy in enemyList)
         {
+            // Get screen position
             Vector2 enemyScreenPos = Raylib.GetWorldToScreen2D(enemy.transform.position, camera);
 
+            // Check if the enemy is on the screen
             if (enemyScreenPos.Y + enemy.collision.size.Y > 0 && enemyScreenPos.Y < screenHeight
                 && enemyScreenPos.X + enemy.collision.size.X > 0 && enemyScreenPos.X < screenWidth)
             {
+                // Activate and draw enemy
                 enemy.active = true;
                 enemy.spriteRenderer.Draw();
             }
+            // Deactivate enemy
             else { enemy.active = false; }
         }
 
@@ -269,9 +289,12 @@ class MainProgram
         // Limit how fast can be shot again
         if (Raylib.GetTime() > shotTime + 0.5f)
         {
+            // Get the position for a bullet
             Vector2 objectPos = transform.position;
             objectPos.X += collision.size.X / 2;
+            // Spawn bullet
             playerBullets.Add(new Bullet(objectPos, new Vector2(12, 12), 200, bulletImage, false, new Rectangle(2, 42, 8, 11)));
+            // Play shootsound and set the time
             Raylib.PlaySound(shootSound);
             shotTime = Raylib.GetTime();
         }
@@ -285,28 +308,41 @@ class MainProgram
     {
         foreach (Enemy enemy in enemyList)
         {
+            // if = fire rate timer
             if (enemy.active && enemy.shooter && Raylib.GetTime() > enemy.lastShotTime + enemy.fireRate)
             {
+                // Get the position for a bullet
                 Vector2 bulletPos = enemy.transform.position + enemy.collision.size;
                 bulletPos.X -= enemy.collision.size.X / 2;
+                // Spawn bullet
                 enemyBullets.Add(new Bullet(bulletPos, new Vector2(12, 12), -200, bulletImage, true, new Rectangle(2, 42, 8, 11)));
+                // Play shootsound and set the time
                 Raylib.PlaySound(shootSound);
                 enemy.lastShotTime = Raylib.GetTime();
             }
         }
     }
 
+    /// <summary>
+    /// Shooting method for bosses
+    /// </summary>
+    /// <param name="boss"></param>
     void BossShoot(Boss boss)
     {
+        // if = fire rate timer
         if (boss.active && Raylib.GetTime() > boss.lastShotTime + boss.fireRate)
         {
+            // Get the position for a bullet
             Vector2 bulletPos = boss.transform.position + boss.collision.size;
             bulletPos.X -= boss.collision.size.X / 2;
+            // Spawn bullets
             enemyBullets.Add(new Bullet(new Vector2(bulletPos.X - 45, bulletPos.Y), 
                 new Vector2(20, 20), -180, bulletImage, true, new Rectangle(2, 42, 8, 11)));
             enemyBullets.Add(new Bullet(new Vector2(bulletPos.X + 25, bulletPos.Y), 
                 new Vector2(20, 20), -180, bulletImage, true, new Rectangle(2, 42, 8, 11)));
+            // Play shootsound
             Raylib.PlaySound(shootSound);
+            // Set the time
             boss.lastShotTime = Raylib.GetTime();
         }
     }
@@ -316,6 +352,7 @@ class MainProgram
     /// </summary>
     /// <param name="bulletList"></param>
     /// <param name="enemyList"></param>
+    /// <param name="boss"></param>
     /// <param name="screenHeight"></param>
     /// <param name="isPlayerShooting">Determines if we check does the bullet hit enemy or player</param>
     void HandleBullets(List<Bullet> bulletList, List<Enemy> enemyList, Boss boss, int screenHeight, bool isPlayerShooting)
@@ -325,7 +362,7 @@ class MainProgram
             // Drawing and moving
             bullet.Handler();
 
-            // Remove bullets that go out of window
+            // Remove bullets that goes out of window
             if (bullet.transfrom.position.Y <= (cameraPos.Y - 10) || bullet.transfrom.position.Y >= (screenHeight + cameraPos.Y + 10))
             {
                 bulletList.Remove(bullet);
@@ -338,6 +375,7 @@ class MainProgram
                 // Checks if a bullet hits an enemy
                 foreach (Enemy enemy in enemyList)
                 {
+                    // Does a player bullet hit an enemy
                     if (enemy.active && Raylib.CheckCollisionRecs(bullet.spriterenderer.box, enemy.spriteRenderer.box))
                     {
                         bulletList.Remove(bullet);
@@ -349,6 +387,7 @@ class MainProgram
                     }
                 }
 
+                // Does a player bullet hit the boss
                 if (boss.active && Raylib.CheckCollisionRecs(bullet.spriterenderer.box, boss.spriteRenderer.box))
                 {
                     bulletList.Remove(bullet);
@@ -362,6 +401,7 @@ class MainProgram
             else
             {
                 // Checks if the bullet hits the player
+                // First player
                 if (player.alive && Raylib.CheckCollisionRecs(bullet.spriterenderer.box, player.spriteRenderer.box))
                 {
                     bulletList.Remove(bullet);
@@ -369,6 +409,7 @@ class MainProgram
                     player.health--;
                     return;
                 }
+                // Second player
                 if (twoPlayer && player2.alive && Raylib.CheckCollisionRecs(bullet.spriterenderer.box, player2.spriteRenderer.box))
                 {
                     bulletList.Remove(bullet);
@@ -383,14 +424,18 @@ class MainProgram
     /// <summary>
     /// Adds enemies and boss to the level
     /// </summary>
+    /// <param name="levelSpawnLocations">Spawn locations on a list</param>
     void AddEnemies(List<Vector2> levelSpawnLocations)
     {
+        // Go through the position list
         foreach (Vector2 spot in levelSpawnLocations)
         {
+            // If the position is first on the list, put a boss in there
             if (spot == levelSpawnLocations[0])
             {
                 boss = new Boss(new Rectangle(spot, 250, 250), 20, playerImage, false, new Rectangle(4, 112, 137, 112), 15, 2.5f);
             }
+            // Otherwise add a random type of enemy
             else
             {
                 int type = new Random().Next(3);
@@ -402,6 +447,7 @@ class MainProgram
     /// <summary>
     /// Restarts the game
     /// </summary>
+    /// <param name="isNewLevel">Did player win a round</param>
     void RestartGame(bool isNewLevel)
     {
         // Reset all the lists and gamestate
@@ -449,6 +495,7 @@ class MainProgram
     /// <summary>
     /// Show player stats from the last run
     /// </summary>
+    /// <param name="win">Did player win a round</param>
     void ScoreScreen(bool win)
     {
         Raylib.BeginDrawing();
@@ -549,6 +596,7 @@ class MainProgram
     /// <summary>
     /// Makes player take damage if collides with an enemy
     /// </summary>
+    /// <param name="player"></param>
     /// <param name="enemyList"></param>
     /// <param name="boss"></param>
     void PlayerEnemyCollision(Player player, List<Enemy> enemyList, Boss boss)
