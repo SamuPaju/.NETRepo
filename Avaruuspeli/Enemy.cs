@@ -12,6 +12,7 @@ class Enemy
     public bool active;
     public bool shooter;
     public bool mover;
+    bool spin;
 
     int screenWidth;
 
@@ -23,32 +24,41 @@ class Enemy
     public double lastShotTime;
     public float fireRate = 1.5f;
 
-    public Enemy(Rectangle frame, float speed, Texture2D sprite, bool rotate, 
+    public Enemy(Rectangle frame, float speed, Texture2D sprite, bool rotate, bool spin,
         Rectangle spriteSpot, Vector2 levelSpeed, bool mover, bool shooter, float fireRate)
     {
         transform = new Transform(frame.Position, speed);
         collision = new Collision(frame.Size);
         spriteRenderer = new SpriteRenderer(transform, collision, sprite, rotate, spriteSpot);
 
-        this.screenWidth = Raylib.GetScreenWidth();
+        screenWidth = Raylib.GetScreenWidth();
         this.levelSpeed = levelSpeed;
 
         this.mover = mover;
         this.shooter = shooter;
         this.fireRate = fireRate;
+        this.spin = spin;
 
         if (mover) { transform.direction.X += 1; }
         transform.direction.Y += 1;
     }
 
+    /// <summary>
+    /// Calls needed methods
+    /// </summary>
     public void Update()
     {
         if (active)
         {
             Movement();
+            // If enemy is set to spin call SpriteRenderers spin method
+            if (spin) { spriteRenderer.Spin(25); }
         }
     }
 
+    /// <summary>
+    /// Moves enemies
+    /// </summary>
     void Movement()
     {
         float time = Raylib.GetFrameTime();

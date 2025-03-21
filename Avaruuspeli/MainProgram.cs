@@ -254,7 +254,7 @@ class MainProgram
             Vector2 enemyScreenPos = Raylib.GetWorldToScreen2D(enemy.transform.position, camera);
 
             // Check if the enemy is on the screen
-            if (enemyScreenPos.Y + enemy.collision.size.Y > 0 && enemyScreenPos.Y < screenHeight
+            if (enemyScreenPos.Y + enemy.collision.size.Y > 0 && enemyScreenPos.Y < screenHeight + 45
                 && enemyScreenPos.X + enemy.collision.size.X > 0 && enemyScreenPos.X < screenWidth)
             {
                 // Activate and draw enemy
@@ -438,7 +438,7 @@ class MainProgram
             // Otherwise add a random type of enemy
             else
             {
-                int type = new Random().Next(3);
+                int type = new Random().Next(4);
                 enemyList.Add(SetEnemy(spot, type));
             }
         }
@@ -570,25 +570,31 @@ class MainProgram
         // Mover
         if (type == 0)
         {
-            return new Enemy(new Rectangle(spot, 30, 30), 25, enemyImage, false,
+            return new Enemy(new Rectangle(spot, 30, 30), 25, enemyImage, false, false,
             new Rectangle(27, 202, 15, 21), new Vector2(0, forwardSpeed), true, false, 0f);
         } 
         // Shooter
         else if (type == 1)
         {
-            return new Enemy(new Rectangle(spot, 25, 25), 25, enemyImage, false,
+            return new Enemy(new Rectangle(spot, 25, 25), 25, enemyImage, false, false,
             new Rectangle(27, 202, 15, 21), new Vector2(0, forwardSpeed), false, true, 2.5f);
         }
         // Advanced shooter
         else if (type == 2)
         {
-            return new Enemy(new Rectangle(spot, 20, 20), 25, enemyImage, false,
+            return new Enemy(new Rectangle(spot, 20, 20), 25, enemyImage, false, false,
             new Rectangle(27, 202, 15, 21), new Vector2(0, forwardSpeed), true, true, 1.5f);
+        }
+        // Bomb/Asteroid
+        else if (type == 3)
+        {
+            return new Enemy(new Rectangle(spot, 45, 45), 30, bulletImage, true, true,
+            new Rectangle(83, 197, 13, 13), new Vector2(0, forwardSpeed), false, false, 0f);
         }
         // Debug tank
         else
         {
-            return new Enemy(new Rectangle(spot, 45, 45), 20, enemyImage, false,
+            return new Enemy(new Rectangle(spot, 45, 45), 20, enemyImage, false, false,
             new Rectangle(27, 202, 15, 21), new Vector2(0, forwardSpeed), false, false, 0f);
         }
     }

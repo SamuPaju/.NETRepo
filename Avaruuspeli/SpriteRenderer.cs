@@ -31,8 +31,8 @@ public class SpriteRenderer
 		{
             // Rotation is needed if the image is upside down
             angle = 180;
-			origin = new Vector2(box.Width, box.Height);
-		}
+            origin = new Vector2(box.Width, box.Height);
+        }
 		else 
 		{ 
 			angle = 0;
@@ -60,4 +60,13 @@ public class SpriteRenderer
         box = new Rectangle((int)transform.position.X, (int)transform.position.Y, collision.size.X, collision.size.Y);
         Raylib.DrawTexturePro(sprite, spriteSpot, box, origin, angle, Color.White);
     }
+
+	/// <summary>
+	/// Spins object
+	/// </summary>
+	/// <param name="speed">Rotation speed</param>
+	public void Spin(int speed)
+	{
+		angle += speed * Raylib.GetFrameTime();
+	}
 }
