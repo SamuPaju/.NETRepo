@@ -7,12 +7,14 @@ namespace Avaruuspeli;
 /// </summary>
 public class SpriteRenderer
 {
-	public Transform transform;
-	public Collision collision;
+	Transform transform;
+	Collision collision;
 	public Rectangle box;
 	Texture2D sprite;
-	bool rotate;
+	public bool rotate;
 	public Rectangle spriteSpot;
+	float angle;
+	Vector2 origin;
 
 
     public SpriteRenderer(Transform transform, Collision collision, Texture2D sprite, bool rotate, Rectangle spriteSpot)
@@ -22,6 +24,20 @@ public class SpriteRenderer
 		this.sprite = sprite;
 		this.rotate = rotate;
 		this.spriteSpot = spriteSpot;
+
+        // Rotate objects if necessary
+        box = new Rectangle((int)transform.position.X, (int)transform.position.Y, collision.size.X, collision.size.Y);
+        if (rotate) 
+		{
+            // Rotation is needed if the image is upside down
+            angle = 180;
+			origin = new Vector2(box.Width, box.Height);
+		}
+		else 
+		{ 
+			angle = 0;
+            origin = new Vector2(0, 0);
+        }
 	}
 
 	/// <summary>
@@ -29,13 +45,9 @@ public class SpriteRenderer
 	/// </summary>
 	public void Draw()
 	{
+		// Draw given part of an image
 		box = new Rectangle((int)transform.position.X, (int)transform.position.Y, collision.size.X, collision.size.Y);
-
-		// Part of a picture
-		// If rotate is true we will turn the image and set the origin to the down right corner
-		if (rotate) { Raylib.DrawTexturePro(sprite, spriteSpot, box, new Vector2(box.Width, box.Height), 180, Color.White); }
-		// Else we will draw the image normally
-		else { Raylib.DrawTexturePro(sprite, spriteSpot, box, new Vector2(0, 0), 0, Color.White); }       
+        Raylib.DrawTexturePro(sprite, spriteSpot, box, origin, angle, Color.White);    
     }
 
     /// <summary>
@@ -44,11 +56,8 @@ public class SpriteRenderer
     /// <param name="spriteSpot"></param>
     public void DrawAnimated(Rectangle spriteSpot)
 	{
+		// Draw given part of given image
         box = new Rectangle((int)transform.position.X, (int)transform.position.Y, collision.size.X, collision.size.Y);
-
-        // If rotate is true we will turn the image and set the origin to the down right corner
-        if (rotate) { Raylib.DrawTexturePro(sprite, spriteSpot, box, new Vector2(box.Width, box.Height), 180, Color.White); }
-        // Else we will draw the image normally
-        else { Raylib.DrawTexturePro(sprite, spriteSpot, box, new Vector2(0, 0), 0, Color.White); }
+        Raylib.DrawTexturePro(sprite, spriteSpot, box, origin, angle, Color.White);
     }
 }
