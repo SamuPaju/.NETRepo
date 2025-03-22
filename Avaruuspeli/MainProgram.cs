@@ -1,10 +1,12 @@
 ﻿using Raylib_cs;
 using System.Numerics;
+using RayGuiCreator;
 
 namespace Avaruuspeli;
 
 enum GameState
 {
+    MainMenu,
     Play,
     ScoreScreen
 }
@@ -84,7 +86,7 @@ class MainProgram
     /// </summary>
     public void Start()
     {
-        state = GameState.Play;
+        state = GameState.MainMenu;
 
         Raylib.InitWindow(800, 600, "Avaruuspeli");
         Raylib.InitAudioDevice();
@@ -129,6 +131,9 @@ class MainProgram
         {
             switch (state)
             {
+                case GameState.MainMenu:
+                    DrawMainMenu(); 
+                    break;
                 case GameState.Play:
                     Update();
                     Draw();
@@ -454,26 +459,27 @@ class MainProgram
         playerBullets = new List<Bullet>();
         enemyBullets = new List<Bullet>();
         enemyList = new List<Enemy>();
-        state = GameState.Play;
 
         SetPlayer();
 
         // Set camera at the start
         cameraPos = new Vector2(0, 0);
 
-        // If new level starts don't reset stats
+        // If new level starts don't reset stats and go back to Main Menu
         if (!isNewLevel)
         {
             score = 0;
             multiplier = 1;
             kills = 0;
             levelIndex = 0;
+            state = GameState.MainMenu;
         }
-        // Set next level
+        // Set and start the next level
         else 
         { 
             levelIndex++; 
             if (levelIndex >= levelArray.Length) { levelIndex = 0; }
+            state = GameState.Play;
         }
 
         AddEnemies(levelArray[levelIndex]);
@@ -631,5 +637,33 @@ class MainProgram
             boss.health--;
             Raylib.PlaySound(explotionSound);
         }
+    }
+
+    /// <summary>
+    /// Create a Main Menu
+    /// </summary>
+    void DrawMainMenu()
+    {
+        Raylib.BeginDrawing();
+        Raylib.ClearBackground(Color.Black);
+
+        MenuCreator creator = new MenuCreator(screenWidth / 3, 100, screenHeight / 20, screenWidth / 2, 15);
+
+        // Create a headline label
+        creator.Label("Main Menu");
+
+        // Create Buttons for starting game
+        if (creator.Button("Start Game (1 player)"))
+        {
+            state = GameState.Play;
+            twoPlayer = false;
+        }
+        if (creator.Button("Start Game (2 player)"))
+        {
+            state = GameState.Play;
+            twoPlayer = true;
+        }
+
+        Raylib.EndDrawing();
     }
 }

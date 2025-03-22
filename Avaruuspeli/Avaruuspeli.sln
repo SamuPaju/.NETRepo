@@ -5,6 +5,8 @@ VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avaruuspeli", "Avaruuspeli.csproj", "{564AE257-58B7-4D93-B100-184B4ACEE83C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RayGuiCreator", "..\..\RayGuiCreator\RayGuiCreator\RayGuiCreator.csproj", "{40EEF05A-4AE0-D7C6-B89C-1D70CFC58BC5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,8 +17,15 @@ Global
 		{564AE257-58B7-4D93-B100-184B4ACEE83C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{564AE257-58B7-4D93-B100-184B4ACEE83C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{564AE257-58B7-4D93-B100-184B4ACEE83C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40EEF05A-4AE0-D7C6-B89C-1D70CFC58BC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40EEF05A-4AE0-D7C6-B89C-1D70CFC58BC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40EEF05A-4AE0-D7C6-B89C-1D70CFC58BC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40EEF05A-4AE0-D7C6-B89C-1D70CFC58BC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FAB13522-1A4C-40E0-A030-13399F335CEB}
 	EndGlobalSection
 EndGlobal
