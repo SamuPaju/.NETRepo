@@ -63,8 +63,8 @@ namespace Avaruuspeli
             }
 
             // Slow movement if none of the keys are pressed
-            if (transform.direction.X == 0) { velocity.X *= 0.9996f; }
-            if (transform.direction.Y == 0) { velocity.Y *= 0.9996f; }
+            if (transform.direction.X == 0) { velocity.X *= 0.9992f; }
+            if (transform.direction.Y == 0) { velocity.Y *= 0.9992f; }
 
             // Calculate velocity
             acceleration = transform.direction * transform.speed + levelSpeed;

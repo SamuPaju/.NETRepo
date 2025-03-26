@@ -1,6 +1,7 @@
 ﻿using Raylib_cs;
 using System.Numerics;
 using RayGuiCreator;
+using TurboMapReader;
 
 namespace Avaruuspeli;
 
@@ -66,11 +67,13 @@ class MainProgram
     };
     List<Vector2>[] levelArray;
     int levelIndex = 0;
+    Map level1;
 
     // Sprites
     Texture2D playerImage;
     Texture2D bulletImage;
     Texture2D enemyImage;
+    Texture2D mapImage;
 
     // Audio
     Sound shootSound;
@@ -95,6 +98,7 @@ class MainProgram
         playerImage = Raylib.LoadTexture("Data/Images/newshf.shp.000000.png");
         bulletImage = Raylib.LoadTexture("Data/Images/tyrian.shp.000000.png");
         enemyImage = Raylib.LoadTexture("Data/Images/tyrian.shp.007D3C.png");
+        mapImage = Raylib.LoadTexture("Data/Images/tiles_packed.png");
 
         // Audio loading
         shootSound = Raylib.LoadSound("Data/Audio/shotSound1.mp3");
@@ -122,6 +126,9 @@ class MainProgram
 
         // Level stuff
         levelArray = new List<Vector2>[] { level1SpawnLocations, level2SpawnLocations };
+
+        // Tiled level stuff
+        level1 = new MapReader().ReadMapFromFile("Data/Tiled/TestLevel.tmj");
 
         // Enemy stuff        
         AddEnemies(levelArray[levelIndex]);
@@ -247,6 +254,7 @@ class MainProgram
         Raylib.ClearBackground(Color.Black);
 
         Raylib.BeginMode2D(camera);
+        level1.Draw(mapImage);
         
         // Moving players are here because their animations are drawn in there
         player.Movement(new Vector2(0, forwardSpeed));       

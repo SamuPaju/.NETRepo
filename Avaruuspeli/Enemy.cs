@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace Avaruuspeli;
 
-class Enemy
+public class Enemy
 {
     public Transform transform;
     public Collision collision;
