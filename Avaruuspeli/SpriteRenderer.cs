@@ -26,12 +26,12 @@ public class SpriteRenderer
 		this.spriteSpot = spriteSpot;
 
         // Rotate objects if necessary
-        box = new Rectangle((int)transform.position.X, (int)transform.position.Y, collision.size.X, collision.size.Y);
+        box = new Rectangle(transform.position, collision.size);
         if (rotate) 
 		{
             // Rotation is needed if the image is upside down
             angle = 180;
-            origin = new Vector2(box.Width, box.Height);
+            origin = new Vector2(box.Width / 2, box.Height / 2);
         }
 		else 
 		{ 
@@ -45,9 +45,13 @@ public class SpriteRenderer
 	/// </summary>
 	public void Draw()
 	{
-		// Draw given part of an image
-		box = new Rectangle((int)transform.position.X, (int)transform.position.Y, collision.size.X, collision.size.Y);
-        Raylib.DrawTexturePro(sprite, spriteSpot, box, origin, angle, Color.White);    
+		// Update box location and size
+        box = new Rectangle(transform.position, collision.size);
+
+        // Draw given part of an image
+        Raylib.DrawTexturePro(sprite, spriteSpot, new Rectangle(box.Position + origin, box.Size), origin, angle, Color.White);
+
+        Raylib.DrawRectangleLines((int)box.Position.X, (int)box.Position.Y, (int)box.Size.X, (int)box.Size.Y, Color.Red);
     }
 
     /// <summary>
@@ -56,9 +60,13 @@ public class SpriteRenderer
     /// <param name="spriteSpot"></param>
     public void DrawAnimated(Rectangle spriteSpot)
 	{
-		// Draw given part of given image
-        box = new Rectangle((int)transform.position.X, (int)transform.position.Y, collision.size.X, collision.size.Y);
-        Raylib.DrawTexturePro(sprite, spriteSpot, box, origin, angle, Color.White);
+        // Update box location and size
+        box = new Rectangle(transform.position, collision.size);
+
+        // Draw given part of given image
+        Raylib.DrawTexturePro(sprite, spriteSpot, new Rectangle(box.Position + origin, box.Size), origin, angle, Color.White);
+
+        Raylib.DrawRectangleLines((int)box.Position.X, (int)box.Position.Y, (int)box.Size.X, (int)box.Size.Y, Color.Red);
     }
 
 	/// <summary>
@@ -68,5 +76,5 @@ public class SpriteRenderer
 	public void Spin(int speed)
 	{
 		angle += speed * Raylib.GetFrameTime();
-	}
+    }
 }

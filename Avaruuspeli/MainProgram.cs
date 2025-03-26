@@ -259,7 +259,7 @@ class MainProgram
             Vector2 enemyScreenPos = Raylib.GetWorldToScreen2D(enemy.transform.position, camera);
 
             // Check if the enemy is on the screen
-            if (enemyScreenPos.Y + enemy.collision.size.Y > 0 && enemyScreenPos.Y < screenHeight + 45
+            if (enemyScreenPos.Y + enemy.collision.size.Y > 0 && enemyScreenPos.Y < screenHeight
                 && enemyScreenPos.X + enemy.collision.size.X > 0 && enemyScreenPos.X < screenWidth)
             {
                 // Activate and draw enemy
@@ -594,7 +594,7 @@ class MainProgram
         // Bomb/Asteroid
         else if (type == 3)
         {
-            return new Enemy(new Rectangle(spot, 45, 45), 30, bulletImage, true, true,
+            return new Enemy(new Rectangle(spot, 36, 36), 30, bulletImage, true, true,
             new Rectangle(83, 197, 13, 13), new Vector2(0, forwardSpeed), false, false, 0f);
         }
         // Debug tank
