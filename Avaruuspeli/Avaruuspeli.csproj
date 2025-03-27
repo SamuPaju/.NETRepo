@@ -53,6 +53,12 @@
     <None Update="Data\Tiled\Kenny%27sPixelShrump.tsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Data\Tiled\Level1.tmj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Tiled\Level2.tmj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Data\Tiled\TestLevel.tmj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

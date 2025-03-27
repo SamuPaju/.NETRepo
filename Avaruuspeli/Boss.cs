@@ -4,6 +4,9 @@ using System.Numerics;
 
 namespace Avaruuspeli;
 
+/// <summary>
+/// Boss type of enemy 
+/// </summary>
 class Boss
 {
     public Transform transform;

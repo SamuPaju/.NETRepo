@@ -1,52 +1,60 @@
-﻿using Raylib_cs;
-using System.Numerics;
-using TurboMapReader;
+﻿using TurboMapReader;
 
 namespace Avaruuspeli;
 
 public class MapReader
 {
+    /// <summary>
+    /// Converts a TurboReaders map into a Map
+    /// </summary>
+    /// <param name="turboMap"></param>
+    /// <returns>The converted map</returns>
     public Map ConvertTiledMapToMap(TiledMap turboMap)
     {
-        // Luo tyhjä kenttä
+        // Create an empty map
         Map gameMap = new Map();
 
-        // Muunna tason "ground" tiedot
+        // Get the first default layer
         TurboMapReader.MapLayer groundLayer = turboMap.GetLayerByName("Tile Layer 1");
 
-        // Palauta null jos ground layeriä ei löydy
+        // Return null if groundLayer is empty
         if (groundLayer == null) { return null; }
 
-        // aseta kentän leveys ja korkeus
+        // Set the levels width and height
         gameMap.mapWidth = groundLayer.width;
         gameMap.mapHeight = groundLayer.data.Length / groundLayer.width;
 
-        // Kuinka monta kenttäpalaa tässä tasossa on?
+        // Get the amount of pieces
         int howManyTiles = groundLayer.data.Length;
-        // Taulukko jossa palat ovat
+        // Get all of the pieces values
         int[] groundTiles = groundLayer.data;
 
-        // Luo uusi taso tietojen perusteella
+        // Create new MapLayer with the collected data
         MapLayer myGroundLayer = new MapLayer(howManyTiles);
         myGroundLayer.name = "Tile Layer 1";
 
         myGroundLayer.mapTiles = groundTiles;
 
-        // Tallenna taso kenttään
+        // Save the layer to the map
         gameMap.layers[0] = myGroundLayer;
 
         return gameMap;
     }
 
+    /// <summary>
+    /// Read the new Tiled file and converts it to a Map
+    /// </summary>
+    /// <param name="filename"></param>
+    /// <returns>A new Map</returns>
     public Map? ReadMapFromFile(string filename)
     {
-        // Lataa tiedosto käyttäen TurboMapReaderia
+        // Download the new file using TurboMapReader
         TurboMapReader.TiledMap mapMadeInTiled = TurboMapReader.MapReader.LoadMapFromFile(filename);
 
-        // Tarkista onnistuiko lataaminen
+        // Check that did loading succeed
         if (mapMadeInTiled != null)
         {
-            // Muuta Map olioksi ja palauta
+            // Convert Map to object and return it
             return ConvertTiledMapToMap(mapMadeInTiled);
         }
         else

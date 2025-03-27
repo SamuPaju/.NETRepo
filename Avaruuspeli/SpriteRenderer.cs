@@ -50,8 +50,6 @@ public class SpriteRenderer
 
         // Draw given part of an image
         Raylib.DrawTexturePro(sprite, spriteSpot, new Rectangle(box.Position + origin, box.Size), origin, angle, Color.White);
-
-        Raylib.DrawRectangleLines((int)box.Position.X, (int)box.Position.Y, (int)box.Size.X, (int)box.Size.Y, Color.Red);
     }
 
     /// <summary>
@@ -65,8 +63,6 @@ public class SpriteRenderer
 
         // Draw given part of given image
         Raylib.DrawTexturePro(sprite, spriteSpot, new Rectangle(box.Position + origin, box.Size), origin, angle, Color.White);
-
-        Raylib.DrawRectangleLines((int)box.Position.X, (int)box.Position.Y, (int)box.Size.X, (int)box.Size.Y, Color.Red);
     }
 
 	/// <summary>

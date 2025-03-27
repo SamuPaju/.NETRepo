@@ -1,7 +1,6 @@
 ﻿using Raylib_cs;
 using System.Numerics;
 using RayGuiCreator;
-using TurboMapReader;
 
 namespace Avaruuspeli;
 
@@ -12,6 +11,9 @@ enum GameState
     ScoreScreen
 }
 
+/// <summary>
+/// Main game
+/// </summary>
 class MainProgram
 {
     // Window
@@ -46,7 +48,7 @@ class MainProgram
     List<Vector2> level1SpawnLocations = new List<Vector2>()
     {
         // Boss location
-        new Vector2(275, -850),
+        new Vector2(275, -800),
 
         new Vector2(100, -200), new Vector2(300, -200),
         new Vector2(100, -100), new Vector2(200, -100),
@@ -67,7 +69,9 @@ class MainProgram
     };
     List<Vector2>[] levelArray;
     int levelIndex = 0;
+    List<Map> levelMaps = new List<Map>();
     Map level1;
+    Map level2;
 
     // Sprites
     Texture2D playerImage;
@@ -126,9 +130,11 @@ class MainProgram
 
         // Level stuff
         levelArray = new List<Vector2>[] { level1SpawnLocations, level2SpawnLocations };
-
         // Tiled level stuff
-        level1 = new MapReader().ReadMapFromFile("Data/Tiled/TestLevel.tmj");
+        level1 = new MapReader().ReadMapFromFile("Data/Tiled/Level1.tmj");
+        levelMaps.Add(level1);
+        level2 = new MapReader().ReadMapFromFile("Data/Tiled/Level2.tmj");
+        levelMaps.Add(level2);
 
         // Enemy stuff        
         AddEnemies(levelArray[levelIndex]);
@@ -155,6 +161,7 @@ class MainProgram
         Raylib.UnloadTexture(playerImage);
         Raylib.UnloadTexture(bulletImage);
         Raylib.UnloadTexture(enemyImage);
+        Raylib.UnloadTexture(mapImage);
 
         // Unload audio
         Raylib.UnloadSound(shootSound);
@@ -188,7 +195,7 @@ class MainProgram
         // Update enemies
         foreach (Enemy enemy in enemyList) { enemy.Update(); }
 
-        // Boss fight state
+        // Boss fight
         if (boss.active)
         {
             boss.Movement();
@@ -231,7 +238,7 @@ class MainProgram
             }
         }
         // New round
-        if (Raylib.IsKeyPressed(KeyboardKey.N) || boss.health <= 0)
+        if (boss.health <= 0)
         {
             // Get round time
             roundTimer = Raylib.GetTime() - timer;
@@ -254,7 +261,9 @@ class MainProgram
         Raylib.ClearBackground(Color.Black);
 
         Raylib.BeginMode2D(camera);
-        level1.Draw(mapImage);
+
+        // Draw the tiled map level
+        levelMaps[levelIndex].Draw(mapImage);
         
         // Moving players are here because their animations are drawn in there
         player.Movement(new Vector2(0, forwardSpeed));       
@@ -293,7 +302,7 @@ class MainProgram
     }
 
     /// <summary>
-    /// Shoots a bullet (going upwards) from given objects location
+    /// Shoots a bullet (going upwards) from given objects (Players) location
     /// </summary>
     /// <param name="transform"></param>
     /// <param name="collision"></param>
@@ -361,10 +370,10 @@ class MainProgram
     }
 
     /// <summary>
-    /// Takes care of bullet in a given list
+    /// Takes care of bullets in a given list
     /// </summary>
-    /// <param name="bulletList"></param>
-    /// <param name="enemyList"></param>
+    /// <param name="bulletList">List of bullets</param>
+    /// <param name="enemyList">List of enemies</param>
     /// <param name="boss"></param>
     /// <param name="screenHeight"></param>
     /// <param name="isPlayerShooting">Determines if we check does the bullet hit enemy or player</param>
@@ -463,7 +472,7 @@ class MainProgram
     /// <param name="isNewLevel">Did player win a round</param>
     void RestartGame(bool isNewLevel)
     {
-        // Reset all the lists and gamestate
+        // Reset all the lists
         playerBullets = new List<Bullet>();
         enemyBullets = new List<Bullet>();
         enemyList = new List<Enemy>();
@@ -473,7 +482,7 @@ class MainProgram
         // Set camera at the start
         cameraPos = new Vector2(0, 0);
 
-        // If new level starts don't reset stats and go back to Main Menu
+        // If new level starts don't reset stats and don't go back to Main Menu
         if (!isNewLevel)
         {
             score = 0;
@@ -486,10 +495,12 @@ class MainProgram
         else 
         { 
             levelIndex++; 
-            if (levelIndex >= levelArray.Length) { levelIndex = 0; }
+            // If levelIndex get bigger or equal to levelArray or levelMaps go back to first level
+            if (levelIndex >= levelArray.Length || levelIndex >= levelMaps.Count) { levelIndex = 0; }
             state = GameState.Play;
         }
 
+        forwardSpeed = -25;
         AddEnemies(levelArray[levelIndex]);
     }
 
@@ -530,18 +541,22 @@ class MainProgram
                 new Vector2(screenWidth / 2 - gameoverTextSize.X / 2, screenHeight / 6), 70, 3, Color.Red);
         }
 
+        // Score text
         Vector2 scoreTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Score: {score}", 50, 3);
         Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Score: {score}", 
             new Vector2(screenWidth / 2 - scoreTextSize.X / 2, screenHeight / 2 - 100), 50, 3, Color.White);
         
+        // Kills text
         Vector2 killsTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Kills: {kills}", 50, 3);
         Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Kills: {kills}", 
             new Vector2(screenWidth / 2 - killsTextSize.X / 2, screenHeight / 2 - 50), 50, 3, Color.White);
        
+        // Time text
         Vector2 timerTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Time: {Math.Round(roundTimer)}", 50, 3);
         Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Time: {Math.Round(roundTimer)}", 
             new Vector2(screenWidth / 2 - timerTextSize.X / 2, screenHeight / 2), 50, 3, Color.White);
 
+        // Guide text
         Vector2 guideTextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), $"Press any key to continue", 50, 3);
         Raylib.DrawTextEx(Raylib.GetFontDefault(), $"Press any key to continue",
             new Vector2(screenWidth / 2 - guideTextSize.X / 2, screenHeight / 2 + 100), 50, 3, Color.White);
@@ -584,25 +599,25 @@ class MainProgram
         // Mover
         if (type == 0)
         {
-            return new Enemy(new Rectangle(spot, 30, 30), 25, enemyImage, false, false,
+            return new Enemy(new Rectangle(spot, 30, 30), 30, enemyImage, false, false,
             new Rectangle(27, 202, 15, 21), new Vector2(0, forwardSpeed), true, false, 0f);
         } 
         // Shooter
         else if (type == 1)
         {
-            return new Enemy(new Rectangle(spot, 25, 25), 25, enemyImage, false, false,
+            return new Enemy(new Rectangle(spot, 25, 25), 30, enemyImage, false, false,
             new Rectangle(27, 202, 15, 21), new Vector2(0, forwardSpeed), false, true, 2.5f);
         }
         // Advanced shooter
         else if (type == 2)
         {
-            return new Enemy(new Rectangle(spot, 20, 20), 25, enemyImage, false, false,
+            return new Enemy(new Rectangle(spot, 20, 20), 30, enemyImage, false, false,
             new Rectangle(27, 202, 15, 21), new Vector2(0, forwardSpeed), true, true, 1.5f);
         }
         // Bomb/Asteroid
         else if (type == 3)
         {
-            return new Enemy(new Rectangle(spot, 36, 36), 30, bulletImage, true, true,
+            return new Enemy(new Rectangle(spot, 36, 36), 35, bulletImage, true, true,
             new Rectangle(83, 197, 13, 13), new Vector2(0, forwardSpeed), false, false, 0f);
         }
         // Debug tank
@@ -661,11 +676,13 @@ class MainProgram
         creator.Label("Main Menu");
 
         // Create Buttons for starting game
+        // Single player
         if (creator.Button("Start Game (1 player)"))
         {
             state = GameState.Play;
             twoPlayer = false;
         }
+        // 2 players
         if (creator.Button("Start Game (2 player)"))
         {
             state = GameState.Play;

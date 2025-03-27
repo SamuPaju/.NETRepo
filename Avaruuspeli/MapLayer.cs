@@ -1,8 +1,8 @@
-﻿using Raylib_cs;
-using System.Numerics;
+﻿namespace Avaruuspeli;
 
-namespace Avaruuspeli;
-
+/// <summary>
+/// MapLayer that has the layers name and tile index numbers
+/// </summary>
 public class MapLayer
 {
     public string name;

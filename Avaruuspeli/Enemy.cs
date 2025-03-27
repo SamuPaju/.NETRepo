@@ -3,6 +3,9 @@ using System.Numerics;
 
 namespace Avaruuspeli;
 
+/// <summary>
+/// Enemy class that holds all that is needed to oerate enemies
+/// </summary>
 public class Enemy
 {
     public Transform transform;
@@ -18,7 +21,7 @@ public class Enemy
 
     Vector2 velocity;
     Vector2 acceleration;
-    float maxSpeed = 100;
+    float maxSpeed = 120;
     Vector2 levelSpeed;
 
     public double lastShotTime;
@@ -63,9 +66,11 @@ public class Enemy
     {
         float time = Raylib.GetFrameTime();
 
+        // If enemy is set to be a mover
         if (mover)
         {
-            if (transform.position.X < collision.size.X / 2)
+            // Change dirextion when enemy is near a wall
+            if (transform.position.X < collision.size.X)
             {
                 transform.direction.X += 1;
             }

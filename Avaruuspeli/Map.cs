@@ -3,12 +3,15 @@ using System.Numerics;
 
 namespace Avaruuspeli;
 
+/// <summary>
+/// Draws and handles Tiled maps
+/// </summary>
 public class Map
 {
     public int mapWidth;
     public int mapHeight;
     public MapLayer[] layers;
-    int tilesPerRow = 12;
+    public int tilesPerRow = 12;
     int tileSize = 16;
 
     public Map()
@@ -22,6 +25,11 @@ public class Map
         }
     }
 
+    /// <summary>
+    /// Checks if given layername is in the layers list
+    /// </summary>
+    /// <param name="layerName"></param>
+    /// <returns>A layer</returns>
     public MapLayer GetLayer(string layerName)
     {
         for (int i = 0; i < layers.Length; i++)
@@ -35,7 +43,11 @@ public class Map
         return null;
     }
 
-    public void Draw( Texture2D mapImage)
+    /// <summary>
+    /// Draws the tilemap
+    /// </summary>
+    /// <param name="mapImage"></param>
+    public void Draw(Texture2D mapImage)
     {
         MapLayer groundLayer = GetLayer("Tile Layer 1");
         int[]mapTiles = groundLayer.mapTiles;
@@ -44,23 +56,32 @@ public class Map
         {
             for (int x = 0; x < mapWidth; x++)
             {
+                // Count the index
                 int tileId = mapTiles[x + y * mapWidth];
                 int spriteId = tileId - 1;
 
-                // Laske suorakulmio
+                // Set a rectangle for the sprites position in the image
                 Rectangle imageRect = new Rectangle(GetSpritePosition(spriteId, tilesPerRow), tileSize, tileSize);
 
-                Vector2 spawnPosition = new Vector2(x * 16, y * 16 - 100);
+                // Set the drawing position
+                Vector2 spawnPosition = new Vector2(x * 16, y * 16 - 800);
 
+                // Draw the image
                 Raylib.DrawTextureRec(mapImage, imageRect, spawnPosition, Color.White);
             }
         }
     }
 
+    /// <summary>
+    /// Counts sprites position based on its index
+    /// </summary>
+    /// <param name="spriteIndex"></param>
+    /// <param name="spritesPerRow"></param>
+    /// <returns>A position as a Vector2</returns>
     public Vector2 GetSpritePosition(int spriteIndex, int spritesPerRow)
     {
-        float spritePixelX = (spriteIndex % spritesPerRow) * mapWidth;
-        float spritePixelY = (int)(spriteIndex / spritesPerRow) * mapHeight;
+        float spritePixelX = (spriteIndex % spritesPerRow) * tileSize;
+        float spritePixelY = (int)(spriteIndex / spritesPerRow) * tileSize;
         return new Vector2(spritePixelX, spritePixelY);
     }
 }
